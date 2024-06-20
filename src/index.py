@@ -8,199 +8,122 @@ os.environ['TK_SILENCE_DEPRECATION'] = '1'
 import tkinter as tk
 from tkinter import messagebox
 
-pyautogui.PAUSE = 0.3
-tabs = 25
+pyautogui.PAUSE = 0.2
+tabs = 1
 headerPanelTabIndex = -1 
 
 def main():
-   print()
-   print('-'*20)
-   print(' Starting script...')
-   print('-'*20)
-   print()
-   sleep(5)
 
+   print('\n+' + ('-'*18) + '+')
+   print(' Starting script... ')
+   print('+' + ('-'*18) + '+\n')
+   sleep(5)
+   
    print(utils.getMousePos(0))
 
    # --- Full Auto Processes
    i = 0
    while(i < tabs):
 
-      # utils.clickUnitCode()
-      # utils.toggleDesignerTab()
-      # utils.openObjectInspector()
-      # utils.selectForm()
-      # fixHeaderPanel()
-      # utils.toggleDesignerTab()
-      # utils.clickUnitCode()
-      # utils.saveChanges()
-      # utils.nextTab()
-      # i = i+1
-      # continue
+      utils.selectUnit() # select unit
+      utils.toggleDesignerTab() # open designer tab
+      utils.selectForm() # select form
 
-      #0 Enter/Select the delphi unit code
-      utils.clickUnitCode()
-
-      #1 - Enter a tab
-      #utils.nextTab()
-
-      #2 - Select the form
-      utils.toggleDesignerTab()
-      utils.openObjectInspector()
-      utils.selectForm()
-
-      #3 - Set the form width, left position, font and border
+      # set form styles
+      utils.selectObjectInspector()
       setFormStyles()
       
-      #5 - Select the labels, radio buttons, check boxes
-      #6 - Set the labels styles, radio buttons styles, check boxes styles
-      utils.addHelperElement('TLabel', '0000001')
-      utils.addHelperElement('TLabel', '0000002')
-      utils.selectLabels()
+      # adds helper elements for preventing empty selection
+      utils.addHelperElement('TLabel', 'TLabel__HelperElement_0000001')
+      utils.addHelperElement('TRadioButton', 'TRadioButton__HelperElement_0000001')
+      utils.addHelperElement('TCheckBox', 'TCheckBox__HelperElement_0000001')
+      utils.addHelperElement('TEdit', 'TEdit__HelperElement_0000001')
+      utils.addHelperElement('TMSEditSel', 'TMSEditSel__HelperElement_0000001')
+      utils.addHelperElement('TComboBox', 'TComboBox__HelperElement_0000001')
+      utils.addHelperElement('TMaskEdit', 'TMaskEdit__HelperElement_0000001')
+      utils.addHelperElement('TMSDateEdit', 'TMSDateEdit__HelperElement_0000001')
+
+      # set labels styles
+      utils.selectElementsByType('TLabel')
+      utils.selectObjectInspector()
       setLabelStyles()
-      utils.delHelperElement()
 
-      utils.addHelperElement('TRadioButton', '0000001')
-      utils.addHelperElement('TRadioButton', '0000002')
-      utils.selectRadioButton()
+      # set radio buttons styles
+      utils.selectElementsByType('TRadioButton')
+      utils.selectObjectInspector()
       setRadioButtonStyles()
-      utils.delHelperElement()
 
-      utils.addHelperElement('TCheckBox', '0000001')
-      utils.addHelperElement('TCheckBox', '0000002')
-      utils.selectCheckBox()
+      # set check boxes styles
+      utils.selectElementsByType('TCheckBox')
+      utils.selectObjectInspector()
       setCheckBoxStyles()
-      utils.delHelperElement()
 
-      #7 - Select the fields
-      #8 - Set the fields styles
-      utils.addHelperElement('TEdit', '0000001')
-      utils.addHelperElement('TMSEditSel', '0000001')
-      utils.addHelperElement('TComboBox', '0000001')
-      utils.addHelperElement('TMaskEdit', '0000001')
-      utils.addHelperElement('TMSDateEdit', '0000001')
-
-      utils.selectFields('all')
+      # set fields styles
+      utils.selectElementsByType('TEdit', 'TComboBox', 'TMaskEdit', 'TMSDateEdit')
+      utils.selectObjectInspector()
       setFieldsStyles('all')
 
-      utils.selectFields('TEdit TMSEditSel TMaskEdit TMSDateEdit')
-      setFieldsStyles('TEdit TMSEditSel TMaskEdit TMSDateEdit')
+      utils.selectElementsByType('TEdit', 'TMaskEdit', 'TMSDateEdit')
+      utils.selectObjectInspector()
+      setFieldsStyles('TEdit', 'TMSEditSel', 'TMaskEdit', 'TMSDateEdit')
       
-      utils.selectFields('TEdit TMSEditSel TComboBox TMaskEdit')
-      setFieldsStyles('TEdit TMSEditSel TComboBox TMaskEdit')
+      utils.selectElementsByType('TEdit', 'TComboBox', 'TMaskEdit')
+      utils.selectObjectInspector()
+      setFieldsStyles('TEdit', 'TMSEditSel', 'TComboBox', 'TMaskEdit')
       
+      # delete helper elements
       utils.delHelperElement()
       
-      #9 - Select the panels
-      #10 - Set the panels styles
-      utils.selectPanels()
+      # set panels styles
+      utils.selectElementsByType('TPanel')
+      utils.selectObjectInspector()
       setPanelsStyles()
 
-      #4 - Add the header panel and add the buttons panel
+      # adds header panel
       addHeaderPanel(i, headerPanelTabIndex)
-      #addButtonsPanel()
-
-      #11 - Run to the next tab
-      utils.toggleDesignerTab()
-      utils.clickUnitCode()
-      utils.saveChanges()
-      utils.nextTab()
+      
+      utils.toggleDesignerTab() # close designer tab
+      utils.selectUnit() # select unit
+      utils.saveChanges() # save changes
+      utils.nextTab() # next tab
 
       i = i+1
 
-   # # --- User Interaction Processes
-   # i = 0
-   # while(i < tabs):
-      
-   #    # request user to select fields and labels
-   #    # left align, resize, vertical space
-   #    # request user to put elements on the right colum and set labels/fields top on first row
-      
-   #    # request user to select left side labels
-   #    # set labels vertical space
-   #    # request user to select left side fields
-   #    # set fields vertical space
-
-   #    # request user to select right side labels
-   #    # set labels vertical space
-   #    # request user to select right side fields
-   #    # set fields vertical space
-
-   #    i = i+1
-
-   print()
-   print('-'*20)
-   print(' Ending script...')
-   print('-'*20)
-   print()      
+   print('\n+' + ('-'*16) + '+')
+   print(' Ending script... ')
+   print('+' + ('-'*16) + '+\n')
    
 
 
 def setFormStyles():
-   pyautogui.click(x=241, y=219) # scroll inspector to top
 
-   # set alignment
-   pyautogui.click(x=170, y=233)
-   pyautogui.keyUp('fn')
-   pyautogui.write('alNone')
-   pyautogui.press('enter')
+   # set align
+   utils.setStyle('Align', 'alNone')
    
-   # set border
-   pyautogui.click(x=170, y=360)
-   pyautogui.keyUp('fn')
-   pyautogui.write('bsNone')
-   pyautogui.press('enter')
-   pyautogui.click(x=170, y=380)
-   pyautogui.keyUp('fn')
-   pyautogui.write('0')
-   pyautogui.press('enter')
+   # set border style
+   utils.setStyle('BorderStyle', 'bsNone')
+
+   # set border width
+   utils.setStyle('BorderWidth', '0')
 
    # set ctl3D
-   pyautogui.click(x=170, y=475)
-   pyautogui.keyUp('fn')
-   pyautogui.write('False')
-   pyautogui.press('enter')
+   utils.setStyle('Ctl3D', 'False')
 
    # set font
-   pyautogui.doubleClick(x=170, y=585)
-   sleep(0.2)
-   pyautogui.keyUp('fn')
-   pyautogui.write('Segoe UI')
-   pyautogui.press('tab')
-   pyautogui.keyUp('fn')
-   pyautogui.write('Regular')
-   pyautogui.press('tab')
-   pyautogui.keyUp('fn')
-   pyautogui.write('9')
-   pyautogui.press('enter')
-
-   pyautogui.click(x=240, y=845) # scroll inspector to bottom
+   utils.setFont()
 
    # set left
-   pyautogui.click(x=170, y=475)
-   pyautogui.keyUp('fn')
-   pyautogui.write('400')
-   pyautogui.press('enter')
+   utils.setStyle('Left', '400')
 
    # set position
-   pyautogui.click(x=170, y=615)
-   pyautogui.keyUp('fn')
-   pyautogui.write('poMainFormCenter')
-   pyautogui.press('enter')
+   utils.setStyle('Position', 'poMainFormCenter')
 
    # set top
-   pyautogui.click(x=170, y=730)
-   pyautogui.keyUp('fn')
-   pyautogui.write('200')
-   pyautogui.press('enter')
+   utils.setStyle('Top', '200')
 
    # set width
-   pyautogui.click(x=170, y=825)
-   pyautogui.keyUp('fn')
-   pyautogui.write('910')
-   pyautogui.press('enter')
+   utils.setStyle('Width', '910')
 
-   pyautogui.click(x=241, y=219) # scroll inspector to top
 
 def fixHeaderPanel():
    pyautogui.click(x=30, y=40)
@@ -242,7 +165,7 @@ def addHeaderPanel(currTabPos: int, panelRefTabPos: int):
    # get header panel
    # --- move to panel reference
    utils.toggleDesignerTab()
-   utils.clickUnitCode()
+   utils.selectUnit()
    i = currTabPos
    while (i != panelRefTabPos):
       if (i > panelRefTabPos):
@@ -261,7 +184,7 @@ def addHeaderPanel(currTabPos: int, panelRefTabPos: int):
    # set header panel
    # --- get back to current tab
    utils.toggleDesignerTab()
-   utils.clickUnitCode()
+   utils.selectUnit()
    while (i != currTabPos):
       if (i < currTabPos):
          utils.nextTab()
@@ -276,12 +199,6 @@ def addHeaderPanel(currTabPos: int, panelRefTabPos: int):
    utils.toggleDesignerTab() # toggle desigener tab again to set focus on it
    utils.toggleDesignerTab()
    pyautogui.hotkey('ctrl', 'v') # paste panel
-   
-   # pyautogui.click(x=520, y=245) # select panel title
-   # pyautogui.click(x=170, y=280)
-   # pyautogui.press('enter')
-   # pyautogui.keyUp('fn')
-   # pyautogui.write('Title') # rewrite title
 
 def bringHeaderTitleToFront():
    pyautogui.hotkey('ctrl', 'h')
@@ -295,189 +212,79 @@ def addButtonsPanel():
 
 
 def setLabelStyles():
-   pyautogui.click(x=241, y=219) # scroll inspector to top
-   pyautogui.click(x=170, y=200) # select first option
 
    # set alignment
-   pyautogui.click(x=170, y=219)
-   pyautogui.keyUp('fn')
-   pyautogui.write('taLeftJustify')
-   pyautogui.press('enter')
+   utils.setStyle('Alignment', 'taLeftJustify')
 
    # set font
-   pyautogui.doubleClick(x=170, y=410)
-   sleep(0.2)
-   pyautogui.keyUp('fn')
-   pyautogui.write('Segoe UI')
-   pyautogui.press('tab')
-   pyautogui.write('Negrito')
-   pyautogui.press('tab')
-   pyautogui.write('9')
-   pyautogui.press('enter')
+   utils.setFont(style='Negrito')
 
 def setRadioButtonStyles():
-   pyautogui.click(x=241, y=219) # scroll inspector to top
-   pyautogui.click(x=170, y=200) # select first option
 
    # set alignment
-   pyautogui.click(x=170, y=219)
-   pyautogui.keyUp('fn')
-   pyautogui.write('taRightJustify')
-   pyautogui.press('enter')
+   utils.setStyle('Alignment', 'taRightJustify')
 
    # set font
-   pyautogui.doubleClick(x=170, y=410)
-   sleep(0.2)
-   pyautogui.keyUp('fn')
-   pyautogui.write('Segoe UI')
-   pyautogui.press('tab')
-   pyautogui.write('Negrito')
-   pyautogui.press('tab')
-   pyautogui.write('9')
-   pyautogui.press('enter')
+   utils.setFont(style='Negrito')
 
 def setCheckBoxStyles():
-   pyautogui.click(x=241, y=219) # scroll inspector to top
-   pyautogui.click(x=170, y=200) # select first option
 
    # set alignment
-   pyautogui.click(x=170, y=219)
-   pyautogui.keyUp('fn')
-   pyautogui.write('taRightJustify')
-   pyautogui.press('enter')
+   utils.setStyle('Alignment', 'taRightJustify')
 
    # set font
-   pyautogui.doubleClick(x=170, y=425)
-   sleep(0.2)
-   pyautogui.keyUp('fn')
-   pyautogui.write('Segoe UI')
-   pyautogui.press('tab')
-   pyautogui.write('Negrito')
-   pyautogui.press('tab')
-   pyautogui.write('9')
-   pyautogui.press('enter')
+   utils.setFont(style='Negrito')
 
-def setFieldsStyles(types: str):
-   pyautogui.click(x=241, y=219) # scroll inspector to top
-   pyautogui.click(x=170, y=200) # select first option
+def setFieldsStyles(*args: str):
 
    # set bevel
    # BevelEdges
-   if(types == 'all'):
-      pyautogui.doubleClick(x=170, y=200)
-      pyautogui.keyUp('fn')
-      pyautogui.write('[beLeft,beTop,beRight,beBottom]')
-      pyautogui.press('enter')
+   if('all' in args):
+      utils.setStyle('BevelEdges', '[beLeft,beTop,beRight,beBottom]')
       # BevelInner
-      pyautogui.click(x=170, y=221)
-      pyautogui.keyUp('fn')
-      pyautogui.write('bvSpace')
-      pyautogui.press('enter')
+      utils.setStyle('BevelInner', 'bvSpace')
       # BevelKind
-      pyautogui.click(x=170, y=235)
-      pyautogui.keyUp('fn')
-      pyautogui.write('bkFlat')
-      pyautogui.press('enter')
+      utils.setStyle('BevelKind', 'bkFlat')
       # BevelOuter
-      pyautogui.click(x=170, y=250)
-      pyautogui.keyUp('fn')
-      pyautogui.write('bvRaised')
-      pyautogui.press('enter')
+      utils.setStyle('BevelOuter', 'bvRaised')
 
    # set border
-   if('TComboBox' not in types and types != 'all'):
-      pyautogui.click(x=170, y=300)
-      pyautogui.keyUp('fn')
-      pyautogui.write('bsNone')
-      pyautogui.press('enter')
+   if('TComboBox' not in args and 'all' not in args):
+      utils.setStyle('BorderStyle', 'bsNone')
 
    # set ctl3D
-   if('TMSDateEdit' not in types and types != 'all'):
-      pyautogui.click(x=170, y=330)
-      pyautogui.keyUp('fn')
-      pyautogui.write('True')
-      pyautogui.press('enter')
+   if('TMSDateEdit' not in args and 'all' not in args):
+      utils.setStyle('Ctl3D', 'True')
 
    # set font
-   if(types == 'all'):
-      pyautogui.doubleClick(x=170, y=313)
-      sleep(0.2)
-      pyautogui.keyUp('fn')
-      pyautogui.write('Segoe UI')
-      pyautogui.press('tab')
-      pyautogui.keyUp('fn')
-      pyautogui.write('Regular')
-      pyautogui.press('tab')
-      pyautogui.keyUp('fn')
-      pyautogui.write('9')
-      pyautogui.press('enter')
+   if('all' in args):
+      utils.setFont()
 
-   # set height
-   if(types == 'all'):
-      pyautogui.click(x=170, y=330)
-   elif(types == 'TEdit TMSEditSel TMaskEdit TMSDateEdit'):
-      pyautogui.click(x=170, y=380)
-   elif(types == 'TEdit TMSEditSel TComboBox TMaskEdit'):
-      pyautogui.click(x=170, y=445)
-
-   pyautogui.keyUp('fn')
-   pyautogui.write('20')
-   pyautogui.press('enter')
-   pyautogui.write('23')
-   pyautogui.press('enter')
+   # set height (20 and the 23 to update symbols size)
+   utils.setStyle('Height', '20')
+   utils.setStyle('Height', '23')
 
 def setPanelsStyles():
-   pyautogui.click(x=241, y=219) # scroll inspector to top
-   pyautogui.click(x=170, y=200) # select first option
-
    # set align
-   pyautogui.doubleClick(x=170, y=200)
-   pyautogui.keyUp('fn')
-   pyautogui.write('alTop')
-   pyautogui.press('enter')
+   utils.setStyle('Align', 'alTop')
 
    # set bevel
    # BevelInner
-   pyautogui.click(x=170, y=265)
-   pyautogui.keyUp('fn')
-   pyautogui.write('bvNone')
-   pyautogui.press('enter')
+   utils.setStyle('BevelInner', 'bvNone')
    # BevelOuter
-   pyautogui.click(x=170, y=280)
-   pyautogui.keyUp('fn')
-   pyautogui.write('bvNone')
-   pyautogui.press('enter')
+   utils.setStyle('BevelOuter', 'bvNone')
    
    # set border
-   pyautogui.click(x=170, y=325)
-   pyautogui.keyUp('fn')
-   pyautogui.write('bsNone')
-   pyautogui.press('enter')
+   utils.setStyle('BorderStyle', 'bsNone')
 
    # set color
-   pyautogui.click(x=170, y=375)
-   pyautogui.keyUp('fn')
-   pyautogui.write('clWhite')
-   pyautogui.press('enter')
+   utils.setStyle('Color', 'clWhite')
 
    # set ctl3D
-   pyautogui.click(x=170, y=395)
-   pyautogui.keyUp('fn')
-   pyautogui.write('False')
-   pyautogui.press('enter')
+   utils.setStyle('Ctl3D', 'False')
 
    # set font
-   pyautogui.doubleClick(x=170, y=505)
-   sleep(0.2)
-   pyautogui.keyUp('fn')
-   pyautogui.write('Segoe UI')
-   pyautogui.press('tab')
-   pyautogui.keyUp('fn')
-   pyautogui.write('Regular')
-   pyautogui.press('tab')
-   pyautogui.keyUp('fn')
-   pyautogui.write('9')
-   pyautogui.press('enter')
+   utils.setFont()
 
 
 
