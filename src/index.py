@@ -42,6 +42,9 @@ def main():
       utils.addHelperElement('TComboBox', 'TComboBox__HelperElement_0000001')
       utils.addHelperElement('TMaskEdit', 'TMaskEdit__HelperElement_0000001')
       utils.addHelperElement('TMSDateEdit', 'TMSDateEdit__HelperElement_0000001')
+      utils.addHelperElement('TDBGrid', 'TDBGrid__HelperElement_0000001')
+      utils.addHelperElement('TMSDBGrid', 'TMSDBGrid__HelperElement_0000001')
+      utils.addHelperElement('TStringGrid', 'TStringGrid__HelperElement_0000001')
 
       # set labels styles
       utils.selectElementsByType('TLabel')
@@ -70,6 +73,9 @@ def main():
       utils.selectElementsByType('TEdit', 'TComboBox', 'TMaskEdit')
       utils.selectObjectInspector()
       setFieldsStyles('TEdit', 'TMSEditSel', 'TComboBox', 'TMaskEdit')
+
+      # utils.selectElementsByType('TDBGrid', 'TMSDBGrid', 'TStringGrid')
+      # setTablesStyles()
       
       # delete helper elements
       utils.delHelperElement()
@@ -286,6 +292,18 @@ def setPanelsStyles():
    # set font
    utils.setFont()
 
+def setTablesStyles():
+   utils.setStyle('BorderStyle', 'bsNone')
+   utils.setStyle('Color', 'clWindow')
+   utils.setStyle('Ctl3D', 'False')
+   utils.setStyle('FixedColor', 'clBtnFace')
+   utils.setFont()
+   utils.setStyle('Options', '[dgEditing,dgTitles,dgIndicator,dgColumnResize,dgTabs,dgAlwaysShowSelection,dgConfirmDelete,dgCancelOnExit]')
+   utils.setStyle('ParentColor', 'False')
+   utils.setStyle('ParentCtl3D', 'True')
+   utils.setStyle('ParentFont', 'False')
+   utils.setStyle('ParentShowHint', 'True')
 
+   utils.setFont()
 
 main()
