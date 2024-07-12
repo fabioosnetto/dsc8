@@ -27,7 +27,7 @@ def selectObjectInspector():
 
 # --- Select the Form
 def selectForm():
-
+   sleep(0.2)
    # select CnPack > Form Design Wizard
    pyautogui.hotkey('option', 'n', 'z', interval=0.1)
    
