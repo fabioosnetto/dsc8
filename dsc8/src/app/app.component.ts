@@ -1,4 +1,6 @@
 import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, PLATFORM_ID } from '@angular/core';
 
 @Component({
    selector: 'app-root',
@@ -14,12 +16,14 @@ export class AppComponent implements OnInit, AfterViewInit {
    fastConversion!: boolean;
    dfmForm!: string;
 
+   constructor(@Inject(PLATFORM_ID) private _platformId: Object) {}
+
    ngOnInit(): void {
 
    }
 
    ngAfterViewInit(): void {
-      setTimeout(() => { this.defSettings(); }, 1000);
+      if (isPlatformBrowser(this._platformId)) setTimeout(() => { this.defSettings(); }, 1000);
    }
 
    //--- Apply the Screen Conversion
@@ -1678,6 +1682,8 @@ export class AppComponent implements OnInit, AfterViewInit {
 
    //--- default settings
    defSettings() {
+      if(!document) return;
+      
       this.fastConversion = false;
 
       const defPasInput = `
