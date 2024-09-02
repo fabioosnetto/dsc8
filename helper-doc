@@ -1,0 +1,74 @@
+helper-doc
+
+* convert all from ANSI to UTF8 for styling and, after doing this, back to ANSI
+
+# -----------
+receive .pas
+
+styling header
+   add new header
+
+styling buttons
+   remove old buttons
+   add new buttons
+
+styling grids
+   identify DBGrid
+   create the necessary procedure for each one if are not created
+   at the start of the procedure or the end (if is already created), write the content accordingly
+
+styling tabs
+   identify page controls
+   create tab viewer accordingly
+   create necessary procedures to the tab viewer
+   make necessary callings of tab viewer procedures and page control stylings
+   identify all page control or tabs usages and change to the tab viewer model
+
+
+# -----------
+receive .dfm
+
+styling form
+   set: Align, BorderStyle, BorderWidth, Ctl3D, Font, Left, Position, Top, Width, WindowState
+
+styling TLabel
+   set: Alignment, Font
+
+styling TRadioButton
+   set: Alignment, Font
+
+styling TCheckBox
+   set: Alignment, Font
+
+styling TEdit
+   set: BevelEdges, BevelInner, BevelKind, BevelOuter, BorderStyle, Ctl3D, Font, Height
+
+styling TMSEditSel
+   set: BevelEdges, BevelInner, BevelKind, BevelOuter, BorderStyle, Ctl3D, Font, Height
+
+styling TComboBox
+   set: BevelEdges, BevelInner, BevelKind, BevelOuter, Ctl3D, Font, Height
+
+styling TMaskEdit
+   set: BevelEdges, BevelInner, BevelKind, BevelOuter, BorderStyle, Ctl3D, Font, Height
+
+styling TMSDateEdit
+   set: BevelEdges, BevelInner, BevelKind, BevelOuter, BorderStyle, Font, Height
+
+styling TDBGrid
+   set: BorderStyle, Color, Ctl3D, FixedColor, ParentColor, ParentCtl3D, ParentFont, ParentShowHint, Font
+
+styling TMSDBGrid
+   set: BorderStyle, Color, Ctl3D, FixedColor, ParentColor, ParentCtl3D, ParentFont, ParentShowHint, Font
+
+styling TStringGrid
+   set: BorderStyle, Color, Ctl3D, FixedColor, ParentColor, ParentCtl3D, ParentFont, ParentShowHint, Font
+
+styling TPanel
+   set: Align, BevelInner, BevelOuter, BorderStyle, Color, Ctl3D, Font
+
+add header
+   add header and set default styles
+
+add buttons
+   add buttons and set default styles

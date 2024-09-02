@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>DSC8 - 2.0</title>
+
+   <link rel="stylesheet" href="./styles.css">
+   <script src="./main.js" type="text/javascript"></script>
+</head>
+
+<body>
+   <header class="m-3">
+      <h1>Delphi Screen Converion Helper 2.0</h1>
+   </header>
+   <main>
+
+      <!-- pas-container -->
+      <div id="pas-container" class="col-12 flex">
+
+         <!-- .pas input -->
+         <div class="col-6 p-05">
+            <label for="pas-input" class="label-control">
+               .pas Input
+               <textarea id="pas-input" class="form-control" autocomplete="off"></textarea>
+            </label>
+         </div>
+
+         <!-- .pas output -->
+         <div class="col-6 p-05">
+            <label for="pas-output" class="label-control">
+               .pas Output
+               <textarea id="pas-output" class="form-control" autocomplete="off" readonly onclick="copyPasOutputToClipboard()"></textarea>
+            </label>
+         </div>
+
+      </div>
+
+      <!-- dfm container -->
+      <div id="dfm-container" class="col-12 flex">
+
+         <!-- .dfm input -->
+         <div class="col-6 p-05">
+            <label for="pas-input" class="label-control">
+               .dfm Input
+               <textarea id="dfm-input" class="form-control" autocomplete="off"></textarea>
+            </label>
+         </div>
+
+         <!-- .dfm output -->
+         <div class="col-6 p-05">
+            <label for="dfm-output" class="label-control">
+               .dfm Output
+               <textarea id="dfm-output" class="form-control" autocomplete="off" readonly onclick="copyDfmOutputToClipboard()"></textarea>
+            </label>
+         </div>
+
+      </div>
+
+      <div class="col-12 flex centralize p-3">
+         <div class="col-6 p-3">
+            <button type="button" class="btn col-12 p-05" onclick="convert()">Convert</button>
+         </div>
+         <div class="col-6 p-3">
+            <label for="fast-conversion" class="label-control">
+               Fast Conversion
+               <input type="checkbox" id="fast-conversion" class="form-control">
+            </label>
+         </div>
+      </div>
+
+
+      <!-- semi-automatic conversion -->
+      <form onsubmit="event.preventDefault()">
+         <h2 class="p-3">Semi-automatic conversion</h2>
+
+         <!-- current control -->
+         <div id="current-control" class="col-12 flex flex-wrap">
+            
+            <!-- parent -->
+            <div class="col-12 p-05">
+               <label for="parent-output" class="label-control">
+                  parent
+                  <output id="parent-output" class="form-control" autocomplete="off"></output>
+               </label>
+            </div>
+
+            <!-- class -->
+            <div class="col-4 p-05">
+               <label for="class-output" class="label-control">
+                  class
+                  <output id="class-output" class="form-control" autocomplete="off"></output>
+               </label>
+            </div>
+
+            <!-- name -->
+            <div class="col-4 p-05">
+               <label for="name-output" class="label-control">
+                  name
+                  <output id="name-output" class="form-control" autocomplete="off"></output>
+               </label>
+            </div>
+
+            <!-- caption -->
+            <div class="col-4 p-05">
+               <label for="caption-output" class="label-control">
+                  caption
+                  <output id="caption-output" class="form-control" autocomplete="off"></output>
+               </label>
+            </div>
+
+         </div>
+
+         <!-- order - width -->
+         <div id="current-control" class="col-12 flex">
+            
+            <!-- order -->
+            <div class="col-6 p-05">
+               <label for="order-input" class="label-control">
+                  order
+                  <select id="order-input" class="form-control" autocomplete="off">
+                     <option value="-1">-1</option>
+                  </select>
+               </label>
+            </div>
+
+            <!-- width -->
+            <div class="col-6 p-05">
+               <label for="width-input" class="label-control">
+                  width
+                  <select id="width-input" class="form-control" autocomplete="off">
+                     <option value="0">col-0</option>
+                  </select>
+               </label>
+            </div>
+
+         </div>
+
+
+         <!-- previous/next buttons -->
+         <div class="col-12 flex centralize p-3 gap-3">
+            <div class="col-3 px-1">
+               <button type="button" id="ui-prev" class="btn col-12 p-05" disabled="true">&lt; Previous</button>
+            </div>
+            <div class="col-3 px-1">
+               <button type="submit" id="ui-next" class="btn col-12 p-05">Next &gt;</button>
+            </div>
+         </div>
+
+      </form>
+
+   </main>
+</body>
+
+</html>
