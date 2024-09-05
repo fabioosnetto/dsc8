@@ -1,0 +1,85 @@
+<aside id="sidebar" class="flex-shrink-0 p-2 bg-dark" style="width: 280px;">
+   
+   <!-- header-->
+   <button type="button" class="btn" disabled>
+      <span class="fs-5 fw-semibold">DSC8 3</span>
+   </button>
+   
+   <hr>
+
+   <!-- main options -->
+   <div id="mid-options">
+      <ng-container *ngIf="fileGroups">
+         <ul id="main-options" class="list-unstyled">
+
+            <!-- files -->
+            <li class="main-opt py-1">
+               <button type="menu" class="btn text-white col-12 text-start" data-bs-toggle="collapse" data-bs-target="#files-container-collapse" aria-expanded="true">Files</button>
+
+               <div class="opt-collapse collapse show" id="files-container-collapse">
+                  <ul class="list-unstyled px-2 mx-2">
+
+                     <!-- file groups -->
+                     <ng-container *ngFor="let group of fileGroups | keyvalue">
+                        <li class="mb-1" (click)="selectFileGroup(group.key)" (contextmenu)="selectFileGroup(group.key); onFilesContextMenu($event)">
+                           <button type="menu" class="btn text-white col-12 text-start ps-0" data-bs-toggle="collapse" [attr.data-bs-target]="['#' + group.key + '-files-collapse']" aria-expanded="true">{{ group.key }}</button>
+
+                           <!-- files -->
+                           <div class="opt-collapse collapse show" id="{{ group.key }}-files-collapse">
+                              <ul class="list-unstyled px-2 mx-2">
+                                 <ng-container *ngFor="let file of group.value | keyvalue">
+                                    <li>
+                                       <button type="menu" class="btn text-white col-12 text-start ps-0" (click)="seeFile(file.key)">{{ file.key }}</button>
+                                    </li>
+                                 </ng-container>
+                              </ul>
+                           </div>
+
+                        </li>
+                     </ng-container>
+
+                  </ul>
+               </div>
+
+            </li>
+
+            <!-- .dfm structure -->
+            <li class="main-opt py-1">
+               <button type="menu" class="btn text-white col-12 text-start" data-bs-toggle="collapse" data-bs-target="#dfm-collapse" aria-expanded="true">.dfm Structure</button>
+
+               <div class="opt-collapse collapse" id="dfm-collapse">
+                  <ul class="list-unstyled px-2 mx-2">
+
+                     <li class="mb-1">
+                        <button type="menu" class="btn text-white col-12 text-start ps-0" [disabled]="true">Nothing here yet...</button>
+                     </li>
+
+                  </ul>
+               </div>
+            </li>
+
+            <!-- .pas structure -->
+            <li class="main-opt py-1">
+               <button type="menu" class="btn text-white col-12 text-start" data-bs-toggle="collapse" data-bs-target="#pas-collapse" aria-expanded="true">.pas Structure</button>
+
+               <div class="opt-collapse collapse" id="pas-collapse">
+                  <ul class="list-unstyled px-2 mx-2">
+
+                     <li class="mb-1">
+                        <button type="menu" class="btn text-white col-12 text-start ps-0" [disabled]="true">Nothing here yet...</button>
+                     </li>
+
+                  </ul>
+               </div>
+            </li>
+
+         </ul>
+      </ng-container>
+
+      <ng-container *ngIf="!fileGroups">
+         <button type="button" class="btn btn-primary text-white col-12" (click)="addFiles()">Add Files</button>
+         <input id="choose-files" type="file" multiple accept=".dfm, .pas, .html, .css, .js" style="display: none;" (input)="onChooseFilesInput()" #choose_files>
+      </ng-container>
+   </div>
+
+</aside>

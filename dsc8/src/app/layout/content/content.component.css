@@ -1,0 +1,37 @@
+:host {
+   width: 100%;
+   margin-left: 280px;
+}
+app-converter ~ :host {
+   margin-left: 560px;
+}
+
+#layout-content {
+   background-color: rgb(1, 1, 21);
+}
+
+.override-template .content-header { padding: 1rem .5rem; }
+.content-header h1 {
+   width: fit-content;
+   border-bottom: .2rem solid #2C3F67;
+}
+
+.content-loading-container {
+   background-color: #0000004d;
+   backdrop-filter: saturate(2.5) blur(3px);
+   width: 100vw;
+   height: 100vh;
+   position: fixed;
+   top: 0;
+   left: 0;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   justify-content: center;
+   gap: 2rem;
+   z-index: 1038;
+}
+.content-loading-container span {
+   font-size: 1.3rem;
+   font-weight: bold;
+}
