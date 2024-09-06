@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, ComponentRef, ElementRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { FileGroupClass } from '../../converter/classes/file-group.class';
+import { FileGroupClass } from '../../converter/classes/files/file-group.class';
 import { ConverterService } from '../../converter/service/converter.service';
 import { ContextMenuComponent } from '../../context-menu/context-menu.component';
 

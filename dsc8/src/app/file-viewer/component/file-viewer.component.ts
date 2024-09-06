@@ -3,7 +3,7 @@ import { TabsService } from '../../layout/tabs/tabs.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Tab } from '../../layout/tabs/tab.class';
 import { ConverterService } from '../../converter/service/converter.service';
-import { FileClass } from '../../converter/classes/file.class';
+import { FileClass } from '../../converter/classes/files/file.class';
 import { Subscription } from 'rxjs';
 
 @Component({

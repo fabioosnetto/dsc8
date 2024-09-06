@@ -1,6 +1,6 @@
 import { ComponentRef, Injectable, ViewContainerRef } from '@angular/core';
-import { FileGroupClass } from '../classes/file-group.class';
-import { FileClass } from '../classes/file.class';
+import { FileGroupClass } from '../classes/files/file-group.class';
+import { FileClass } from '../classes/files/file.class';
 import { ConverterComponent } from '../component/converter.component';
 import { Subject } from 'rxjs';
 
@@ -403,7 +403,7 @@ export class ConverterService {
 
 
   //--- PAS Add Object
-  pasAddObject(pasObj: any, objClass: string, objName: string) {
+  pasAddObject(pasObj: any, objClass: string, objName: string): boolean {
 
     const getObjectsLastLineIndex = (lines: Array<string>): number => {
       // get level accordingly to the line indentation level
@@ -453,6 +453,9 @@ export class ConverterService {
     let lines = String(pasObj[unitKey]).trim().split('\n');
     const objIndex: number = getObjectsLastLineIndex(lines);
 
+    // verify for an existent object
+    if(lines.findIndex(l => l.trim() === `${objName}: ${objClass};`) > -1) return false;
+
     // declare a new line to the requested object
     const indent = String(lines[objIndex]).match(new RegExp('\\s*'))?.[0];
     let newLines = new Array();
@@ -463,6 +466,7 @@ export class ConverterService {
 
     // update the PAS object with the new object
     pasObj[unitKey] = newLines.join('\n');
+    return true;
   }
   //--- PAS Remove Object
   pasRemoveObject(pasObj: any, objClass: string, objName: string) {
@@ -657,9 +661,10 @@ export class ConverterService {
       if (typeof dfmObj[key] === 'object' && dfmObj[key] !== null) {
 
         if (!dfmObj[key]['_objectClass']) continue;
+        const currentClass = dfmObj[key]['_objectClass'];
         this.applyStyles(dfmObj[key], pasObj);
 
-        switch (dfmObj[key]['_objectClass']) {
+        switch (currentClass) {
 
           // form
           case dfmObj[Object.keys(dfmObj)[0]]['_objectClass']:
@@ -683,48 +688,18 @@ export class ConverterService {
             dfmObj[key]['ParentFont'] = 'False';
             dfmObj[key]['WindowState'] = 'wsMaximized';
             dfmObj[key]['TextHeight'] = '15';
-            break;
+          break;
 
+          // text, radio, check
           case 'TLabel':
-            dfmObj[key]['Alignment'] = 'taLeftJustify';
-            dfmObj[key]['AutoSize'] = 'False';
-            dfmObj[key]['Font'] = {};
-            dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
-            dfmObj[key]['Font']['Color'] = 'clBlack';
-            dfmObj[key]['Font']['Height'] = null;
-            dfmObj[key]['Font']['Size'] = '9';
-            dfmObj[key]['Font']['Name'] = "'Segoe UI'";
-            dfmObj[key]['Font']['Style'] = '[fsBold]';
-            dfmObj[key]['ParentFont'] = 'False';
-
-            // ask user
-            // dfmObj[key]['Width'] = '';
-            // dfmObj[key]['Left'] = '';
-            // dfmObj[key]['Top'] = '';
-
-            break;
-
+          case 'TDBText':
           case 'TRadioButton':
-            dfmObj[key]['Alignment'] = 'taRightJustify';
-            dfmObj[key]['Font'] = {};
-            dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
-            dfmObj[key]['Font']['Color'] = 'clBlack';
-            dfmObj[key]['Font']['Height'] = null;
-            dfmObj[key]['Font']['Size'] = '9';
-            dfmObj[key]['Font']['Name'] = "'Segoe UI'";
-            dfmObj[key]['Font']['Style'] = '[fsBold]';
-            dfmObj[key]['ParentFont'] = 'False';
-
-            // ask user
-            // dfmObj[key]['Width'] = '';
-            // dfmObj[key]['Left'] = '';
-            // dfmObj[key]['Top'] = '';
-            // dfmObj[key]['TabStop'] = '';
-            // dfmObj[key]['TabOrder'] = '';
-            break;
-
           case 'TCheckBox':
-            dfmObj[key]['Alignment'] = 'taRightJustify';
+          case 'TDBCheckBox':
+            if(currentClass === 'TLabel' || currentClass === 'TDBText') {
+              dfmObj[key]['Alignment'] = 'taLeftJustify';
+              dfmObj[key]['AutoSize'] = 'False';
+            }
             dfmObj[key]['Font'] = {};
             dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
             dfmObj[key]['Font']['Color'] = 'clBlack';
@@ -733,124 +708,31 @@ export class ConverterService {
             dfmObj[key]['Font']['Name'] = "'Segoe UI'";
             dfmObj[key]['Font']['Style'] = '[fsBold]';
             dfmObj[key]['ParentFont'] = 'False';
+          break;
 
-            // ask user
-            // dfmObj[key]['Width'] = '';
-            // dfmObj[key]['Left'] = '';
-            // dfmObj[key]['Top'] = '';
-            // dfmObj[key]['TabStop'] = '';
-            // dfmObj[key]['TabOrder'] = '';
-            break;
-
+          // fields
           case 'TEdit':
-            dfmObj[key]['AutoSize'] = 'False';
-            dfmObj[key]['BevelEdges'] = '[beLeft,beTop,beRight,beBottom]';
-            dfmObj[key]['BevelInner'] = 'bvSpace';
-            dfmObj[key]['BevelKind'] = 'bkFlat';
-            dfmObj[key]['BevelOuter'] = 'bvRaised';
-            dfmObj[key]['BorderStyle'] = 'bsNone';
-            dfmObj[key]['Ctl3D'] = 'True';
-            dfmObj[key]['Font'] = {};
-            dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
-            dfmObj[key]['Font']['Color'] = 'clBlack';
-            dfmObj[key]['Font']['Height'] = null;
-            dfmObj[key]['Font']['Size'] = '9';
-            dfmObj[key]['Font']['Name'] = "'Segoe UI'";
-            dfmObj[key]['Font']['Style'] = '[]';
-            dfmObj[key]['Height'] = '23';
-            dfmObj[key]['ParentFont'] = 'False';
-
-            // ask user
-            // dfmObj[key]['Width'] = '';
-            // dfmObj[key]['Left'] = '';
-            // dfmObj[key]['Top'] = '';
-            // dfmObj[key]['TabStop'] = '';
-            // dfmObj[key]['TabOrder'] = '';
-            break;
-
-          case 'TMSEditSel':
-            dfmObj[key]['AutoSize'] = 'False';
-            dfmObj[key]['BevelEdges'] = '[beLeft,beTop,beRight,beBottom]';
-            dfmObj[key]['BevelInner'] = 'bvSpace';
-            dfmObj[key]['BevelKind'] = 'bkFlat';
-            dfmObj[key]['BevelOuter'] = 'bvRaised';
-            dfmObj[key]['BorderStyle'] = 'bsNone';
-            dfmObj[key]['Ctl3D'] = 'True';
-            dfmObj[key]['Font'] = {};
-            dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
-            dfmObj[key]['Font']['Color'] = 'clBlack';
-            dfmObj[key]['Font']['Height'] = null;
-            dfmObj[key]['Font']['Size'] = '9';
-            dfmObj[key]['Font']['Name'] = "'Segoe UI'";
-            dfmObj[key]['Font']['Style'] = '[]';
-            dfmObj[key]['Height'] = '23';
-            dfmObj[key]['ParentFont'] = 'False';
-
-            // ask user
-            // dfmObj[key]['Width'] = '';
-            // dfmObj[key]['Left'] = '';
-            // dfmObj[key]['Top'] = '';
-            // dfmObj[key]['TabStop'] = '';
-            // dfmObj[key]['TabOrder'] = '';
-            break;
-
-          case 'TComboBox':
-            dfmObj[key]['BevelEdges'] = '[beLeft,beTop,beRight,beBottom]';
-            dfmObj[key]['BevelInner'] = 'bvSpace';
-            dfmObj[key]['BevelKind'] = 'bkFlat';
-            dfmObj[key]['BevelOuter'] = 'bvRaised';
-            dfmObj[key]['Ctl3D'] = 'True';
-            dfmObj[key]['Font'] = {};
-            dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
-            dfmObj[key]['Font']['Color'] = 'clBlack';
-            dfmObj[key]['Font']['Height'] = null;
-            dfmObj[key]['Font']['Size'] = '9';
-            dfmObj[key]['Font']['Name'] = "'Segoe UI'";
-            dfmObj[key]['Font']['Style'] = '[]';
-            dfmObj[key]['Height'] = '23';
-            dfmObj[key]['ParentFont'] = 'False';
-
-            // ask user
-            // dfmObj[key]['Width'] = '';
-            // dfmObj[key]['Left'] = '';
-            // dfmObj[key]['Top'] = '';
-            // dfmObj[key]['TabStop'] = '';
-            // dfmObj[key]['TabOrder'] = '';
-            break;
-
-          case 'TMaskEdit':
-            dfmObj[key]['AutoSize'] = 'False';
-            dfmObj[key]['BevelEdges'] = '[beLeft,beTop,beRight,beBottom]';
-            dfmObj[key]['BevelInner'] = 'bvSpace';
-            dfmObj[key]['BevelKind'] = 'bkFlat';
-            dfmObj[key]['BevelOuter'] = 'bvRaised';
-            dfmObj[key]['BorderStyle'] = 'bsNone';
-            dfmObj[key]['Ctl3D'] = 'True';
-            dfmObj[key]['Font'] = {};
-            dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
-            dfmObj[key]['Font']['Color'] = 'clBlack';
-            dfmObj[key]['Font']['Height'] = null;
-            dfmObj[key]['Font']['Size'] = '9';
-            dfmObj[key]['Font']['Name'] = "'Segoe UI'";
-            dfmObj[key]['Font']['Style'] = '[]';
-            dfmObj[key]['Height'] = '23';
-            dfmObj[key]['ParentFont'] = 'False';
-
-            // ask user
-            // dfmObj[key]['Width'] = '';
-            // dfmObj[key]['Left'] = '';
-            // dfmObj[key]['Top'] = '';
-            // dfmObj[key]['TabStop'] = '';
-            // dfmObj[key]['TabOrder'] = '';
-            break;
-
+          case 'TDBEdit':
+          case 'TMSDBEditNum':
           case 'TMSDateEdit':
-            dfmObj[key]['AutoSize'] = 'False';
+          case 'TMSDBFind':
+          case 'TMSEdit':
+          case 'TMSEditFind':
+          // case 'TMSFindIncZ':
+          case 'TMSEditSel':
+          case 'TMaskEdit':
+          case 'TComboBox':
+          case 'TDBMemo':
+            if(currentClass === 'TMSDateEdit') dfmObj[key]['Alignment'] = 'taCenter';
+            if(currentClass === 'TMSDBEditNum' || currentClass === 'TMSDBFind' || currentClass === 'TMSEditFind' || currentClass === 'TMSEditSel' || currentClass === 'TDBMemo') dfmObj[key]['Alignment'] = 'taLeftJustify';
+            
+            if(currentClass !== 'TComboBox') dfmObj[key]['AutoSize'] = 'False';
             dfmObj[key]['BevelEdges'] = '[beLeft,beTop,beRight,beBottom]';
             dfmObj[key]['BevelInner'] = 'bvSpace';
             dfmObj[key]['BevelKind'] = 'bkFlat';
             dfmObj[key]['BevelOuter'] = 'bvRaised';
-            dfmObj[key]['BorderStyle'] = 'bsNone';
+            if(currentClass !== 'TComboBox') dfmObj[key]['BorderStyle'] = 'bsNone';
+            if(currentClass !== 'TMSDateEdit') dfmObj[key]['Ctl3D'] = 'True';
             dfmObj[key]['Font'] = {};
             dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
             dfmObj[key]['Font']['Color'] = 'clBlack';
@@ -859,161 +741,23 @@ export class ConverterService {
             dfmObj[key]['Font']['Name'] = "'Segoe UI'";
             dfmObj[key]['Font']['Style'] = '[]';
             dfmObj[key]['Height'] = '23';
-            dfmObj[key]['ParentFont'] = 'False';
+            if(currentClass !== 'TMSDateEdit') dfmObj[key]['ParentFont'] = 'False';
 
-            // ask user
-            // dfmObj[key]['Width'] = '';
-            // dfmObj[key]['Left'] = '';
-            // dfmObj[key]['Top'] = '';
-            // dfmObj[key]['TabStop'] = '';
-            // dfmObj[key]['TabOrder'] = '';
-            break;
+            // fields with label shape
+            if(currentClass === 'TMSDBFind' || currentClass === 'TMSEditFind' || currentClass === 'TMSEditSel') {
+              dfmObj[key]['LabelShape'] = 'True';
 
+              if(currentClass === 'TMSDBFind') {
+                dfmObj[key]['LabelSpacing'] = '5';
+                dfmObj[key]['LabelWidth'] = '250';
+              }
+              if(currentClass === 'TMSEditFind') dfmObj[key]['DisplayWidth'] = '250';
+            }
+          break;
+
+          // grids
           case 'TDBGrid':
-            dfmObj[key]['BorderStyle'] = 'bsNone';
-            dfmObj[key]['Color'] = 'clWindow';
-            dfmObj[key]['Ctl3D'] = 'False';
-            dfmObj[key]['FixedColor'] = 'clBtnFace';
-            dfmObj[key]['ParentColor'] = 'False';
-            dfmObj[key]['ParentCtl3D'] = 'False';
-            dfmObj[key]['ParentFont'] = 'False';
-            dfmObj[key]['ParentShowHint'] = 'True';
-            dfmObj[key]['Font'] = {};
-            dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
-            dfmObj[key]['Font']['Color'] = '8404992';
-            dfmObj[key]['Font']['Height'] = null;
-            dfmObj[key]['Font']['Size'] = '9';
-            dfmObj[key]['Font']['Name'] = "'Segoe UI'";
-            dfmObj[key]['Font']['Style'] = '[fsBold]';
-            dfmObj[key]['TitleFont'] = {};
-            dfmObj[key]['TitleFont']['Charset'] = 'ANSI_CHARSET';
-            dfmObj[key]['TitleFont']['Color'] = '8404992';
-            dfmObj[key]['TitleFont']['Height'] = '-11';
-            dfmObj[key]['TitleFont']['Size'] = '9';
-            dfmObj[key]['TitleFont']['Name'] = "'Segoe UI'";
-            dfmObj[key]['TitleFont']['Style'] = '[fsBold]';
-            dfmObj[key]['Options'] = '[dgEditing, dgTitles, dgIndicator, dgColumnResize, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]';
-
-            dfmObj[key]['OnDrawColumnCell'] = `${key}DrawColumnCell`;
-            dfmObj[key]['OnMouseUp'] = `${key}MouseUp`;
-            dfmObj[key]['OnTitleClick'] = `${key}TitleClick`;
-            this.pasAddMethod(pasObj,
-              'procedure',
-              `${key}DrawColumnCell`,
-              'Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState',
-              `if Odd(${key}.datasource.dataset.recno) then
-                      ${key}.canvas.brush.color := $00DADADA
-                    else
-                      ${key}.canvas.brush.color := clwhite;
-              
-                    if (gdSelected in State) then
-                    begin
-                      ${key}.canvas.brush.color := $0084632B;
-                      ${key}.canvas.font.color := clwhite;
-                      ${key}.canvas.font.style := [fsBold];
-                    end;
-              
-                    ${key}.canvas.FillRect(Rect);
-                    ${key}.Defaultdrawcolumncell( Rect, datacol, Column, State );
-              
-                    ${key}.canvas.textrect( rect, rect.left + 8, Rect.top+8, Column.field.displaytext );`
-            );
-            this.pasAddMethod(pasObj,
-              'procedure',
-              `${key}MouseUp`,
-              'Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer',
-              `TDBGridPad(${key}).defaultRowHeight := 30;
-                    TDBGridPad(${key}).clientHeight     := (30 * TDBGridPad(${key}).rowcount) + 30;`
-            );
-            this.pasAddMethod(pasObj,
-              'procedure',
-              `${key}TitleClick`,
-              'Column: TColumn',
-              `TDBGridPad(${key}).defaultRowHeight := 30;
-                    TDBGridPad(${key}).clientHeight     := (30 * TDBGridPad(${key}).rowcount) + 30;`
-            );
-
-            // ask user
-            // dfmObj[key]['Width'] = '';
-            // dfmObj[key]['Left'] = '';
-            // dfmObj[key]['Top'] = '';
-            // dfmObj[key]['TabStop'] = '';
-            // dfmObj[key]['TabOrder'] = '';
-            break;
-
           case 'TMSDBGrid':
-            dfmObj[key]['BorderStyle'] = 'bsNone';
-            dfmObj[key]['Color'] = 'clWindow';
-            dfmObj[key]['Ctl3D'] = 'False';
-            dfmObj[key]['FixedColor'] = 'clBtnFace';
-            dfmObj[key]['ParentColor'] = 'False';
-            dfmObj[key]['ParentCtl3D'] = 'False';
-            dfmObj[key]['ParentFont'] = 'False';
-            dfmObj[key]['ParentShowHint'] = 'True';
-            dfmObj[key]['Font'] = {};
-            dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
-            dfmObj[key]['Font']['Color'] = '8404992';
-            dfmObj[key]['Font']['Height'] = null;
-            dfmObj[key]['Font']['Size'] = '9';
-            dfmObj[key]['Font']['Name'] = "'Segoe UI'";
-            dfmObj[key]['Font']['Style'] = '[fsBold]';
-            dfmObj[key]['TitleFont'] = {};
-            dfmObj[key]['TitleFont']['Charset'] = 'ANSI_CHARSET';
-            dfmObj[key]['TitleFont']['Color'] = '8404992';
-            dfmObj[key]['TitleFont']['Height'] = '-11';
-            dfmObj[key]['TitleFont']['Size'] = '9';
-            dfmObj[key]['TitleFont']['Name'] = "'Segoe UI'";
-            dfmObj[key]['TitleFont']['Style'] = '[fsBold]';
-            dfmObj[key]['Options'] = '[dgEditing, dgTitles, dgIndicator, dgColumnResize, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]';
-
-            dfmObj[key]['OnDrawColumnCell'] = `${key}DrawColumnCell`;
-            dfmObj[key]['OnMouseUp'] = `${key}MouseUp`;
-            dfmObj[key]['OnTitleClick'] = `${key}TitleClick`;
-
-            this.pasAddMethod(pasObj,
-              'procedure',
-              `${key}DrawColumnCell`,
-              'Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState',
-              `if Odd(${key}.datasource.dataset.recno) then
-                      ${key}.canvas.brush.color := $00DADADA
-                    else
-                      ${key}.canvas.brush.color := clwhite;
-              
-                    if (gdSelected in State) then
-                    begin
-                      ${key}.canvas.brush.color := $0084632B;
-                      ${key}.canvas.font.color := clwhite;
-                      ${key}.canvas.font.style := [fsBold];
-                    end;
-              
-                    ${key}.canvas.FillRect(Rect);
-                    ${key}.Defaultdrawcolumncell( Rect, datacol, Column, State );
-              
-                    ${key}.canvas.textrect( rect, rect.left + 8, Rect.top+8, Column.field.displaytext );`
-            );
-            this.pasAddMethod(pasObj,
-              'procedure',
-              `${key}MouseUp`,
-              'Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer',
-              `TDBGridPad(${key}).defaultRowHeight := 30;
-                    TDBGridPad(${key}).clientHeight     := (30 * TDBGridPad(${key}).rowcount) + 30;`
-            );
-            this.pasAddMethod(pasObj,
-              'procedure',
-              `${key}TitleClick`,
-              'Column: TColumn',
-              `TDBGridPad(${key}).defaultRowHeight := 30;
-                    TDBGridPad(${key}).clientHeight     := (30 * TDBGridPad(${key}).rowcount) + 30;`
-            );
-
-            // ask user
-            // dfmObj[key]['Width'] = '';
-            // dfmObj[key]['Left'] = '';
-            // dfmObj[key]['Top'] = '';
-            // dfmObj[key]['TabStop'] = '';
-            // dfmObj[key]['TabOrder'] = '';
-            break;
-
           case 'TStringGrid':
             dfmObj[key]['BorderStyle'] = 'bsNone';
             dfmObj[key]['Color'] = 'clWindow';
@@ -1037,7 +781,9 @@ export class ConverterService {
             dfmObj[key]['TitleFont']['Size'] = '9';
             dfmObj[key]['TitleFont']['Name'] = "'Segoe UI'";
             dfmObj[key]['TitleFont']['Style'] = '[fsBold]';
+            if(currentClass !== 'TStringGrid') dfmObj[key]['Options'] = '[dgEditing, dgTitles, dgIndicator, dgColumnResize, dgTabs, dgAlwaysShowSelection, dgConfirmDelete, dgCancelOnExit]';
 
+            // add procedures (OnDrawColumnCell, OnMouseUp, OnTitleClick)
             dfmObj[key]['OnDrawColumnCell'] = `${key}DrawColumnCell`;
             dfmObj[key]['OnMouseUp'] = `${key}MouseUp`;
             dfmObj[key]['OnTitleClick'] = `${key}TitleClick`;
@@ -1076,18 +822,10 @@ export class ConverterService {
               `TDBGridPad(${key}).defaultRowHeight := 30;
                     TDBGridPad(${key}).clientHeight     := (30 * TDBGridPad(${key}).rowcount) + 30;`
             );
+          break;
 
-            // ask user
-            // dfmObj[key]['Width'] = '';
-            // dfmObj[key]['Left'] = '';
-            // dfmObj[key]['Top'] = '';
-            // dfmObj[key]['TabStop'] = '';
-            // dfmObj[key]['TabOrder'] = '';
-            break;
-
+          // panels
           case 'TPanel':
-            // ask user
-            //dfmObj[key]['Align'] = 'alTop';
             dfmObj[key]['AutoSize'] = 'False';
             dfmObj[key]['BevelInner'] = 'bvNone';
             dfmObj[key]['BevelOuter'] = 'bvNone';
@@ -1102,11 +840,25 @@ export class ConverterService {
             dfmObj[key]['Font']['Name'] = "'Segoe UI'";
             dfmObj[key]['Font']['Style'] = '[]';
             dfmObj[key]['ParentFont'] = 'False';
-            break;
-
+          break;
+          case 'TGroupBox':
+            dfmObj[key]['Caption'] = `'   ${String(dfmObj[key]['Caption']).split("'").join('').trim()}   '`;
+            dfmObj[key]['Color'] = 'clWhite';
+            dfmObj[key]['Ctl3D'] = 'True';
+            dfmObj[key]['Font'] = {};
+            dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
+            dfmObj[key]['Font']['Color'] = 'clBlack';
+            dfmObj[key]['Font']['Height'] = null;
+            dfmObj[key]['Font']['Size'] = '9';
+            dfmObj[key]['Font']['Name'] = "'Segoe UI'";
+            dfmObj[key]['Font']['Style'] = '[fsBold]';
+            dfmObj[key]['ParentFont'] = 'False';
+            dfmObj[key]['Left'] = '0';
+            dfmObj[key]['Width'] = `${dfmObj['Width']}`;
+          break;
 
           default:
-            break;
+          break;
         }
 
       }
@@ -1173,24 +925,30 @@ export class ConverterService {
         if (!dfmObj[key]['_objectClass']) continue;
         this.addButtons(dfmObj[key], pasObj, dfmForm, dfmObj['_objectClass']);
 
-        if (String(dfmObj[key]['_objectClass']).includes('TSpeedButton') && dfmObj['_objectClass'] === 'TPanel') {
-          // buttons container panel styles
-          if (parent === dfmForm) {
-            dfmObj['_order'] = 'Infinity';
-            dfmObj['Align'] = 'alBottom';
-          } else {
-            dfmObj['Align'] = 'alTop';
+        if(['TButton', 'TBitBtn', 'TDBSpeedButton', 'TSpeedButton', 'TMSButton'].includes(String(dfmObj[key]['_objectClass'])) && dfmObj['_objectClass'] === 'TPanel') {
+          
+          // container panel is only for buttons
+          const isButtonsContainer = !Object.keys(dfmObj).some(k => dfmObj[k]['_objectClass'] && !['TButton', 'TBitBtn', 'TDBSpeedButton', 'TSpeedButton', 'TMSButton'].includes(dfmObj[k]['_objectClass']));
+          if(isButtonsContainer) {
+            // buttons container panel styles
+            if (parent === dfmForm) {
+              dfmObj['_order'] = 'Infinity';
+              dfmObj['Align'] = 'alBottom';
+            } else {
+              dfmObj['Align'] = 'alTop';
+            }
+            // dfmObj['Left'] = '0';
+            // dfmObj['Top'] = '0';
+            // dfmObj['Width'] = '894';
+            dfmObj['Height'] = '39';
+            dfmObj['BevelOuter'] = 'bvNone';
+            dfmObj['Color'] = '15132390';
+            // dfmObj['TabOrder'] = '3';
           }
-          // dfmObj['Left'] = '0';
-          // dfmObj['Top'] = '0';
-          // dfmObj['Width'] = '894';
-          dfmObj['Height'] = '39';
-          dfmObj['BevelOuter'] = 'bvNone';
-          dfmObj['Color'] = '15132390';
-          // dfmObj['TabOrder'] = '3';
 
           // add button panel
-          this.pasAddObject(pasObj, 'TPanel', `Panel${key}`);
+          // if the panel is existent, means the button is still converted
+          if(!this.pasAddObject(pasObj, 'TPanel', `Panel${key}`)) continue;
 
           // buton panel styles
           dfmObj[`Panel${key}`] = {};
@@ -1201,10 +959,11 @@ export class ConverterService {
           dfmObj[`Panel${key}`]['Width'] = `${(((String(dfmObj[key]['Caption']).length - 2) * 10) + 20).toFixed()}`;
           dfmObj[`Panel${key}`]['Height'] = '28';
           dfmObj[`Panel${key}`]['BevelOuter'] = 'bvNone';
-          dfmObj[`Panel${key}`]['Color'] = 'clWhite';
+          dfmObj[`Panel${key}`]['Color'] = isButtonsContainer ? 'clWhite' : 'clGray';
+          dfmObj[`Panel${key}`]['Cursor'] = 'crHandPoint';
           dfmObj[`Panel${key}`]['Font'] = {};
           dfmObj[`Panel${key}`]['Font']['Charset'] = 'ANSI_CHARSET';
-          dfmObj[`Panel${key}`]['Font']['Color'] = 'clGray'; // ask user (main button is white font)
+          dfmObj[`Panel${key}`]['Font']['Color'] = isButtonsContainer ? '5789784' : '5789784';
           dfmObj[`Panel${key}`]['Font']['Height'] = null;
           dfmObj[`Panel${key}`]['Font']['Size'] = '10';
           dfmObj[`Panel${key}`]['Font']['Name'] = "'Segoe UI'";
@@ -1219,23 +978,25 @@ export class ConverterService {
 
           // button styles
           dfmObj[`Panel${key}`][key] = {};
-          dfmObj[`Panel${key}`][key] = dfmObj[key];
           dfmObj[`Panel${key}`][key]['_objectClass'] = 'TSpeedButton';
           dfmObj[`Panel${key}`][key]['Left'] = '-3';
           dfmObj[`Panel${key}`][key]['Top'] = '-3';
           dfmObj[`Panel${key}`][key]['Width'] = `${(((String(dfmObj[key]['Caption']).length - 2) * 10) + 25).toFixed()}`;
           dfmObj[`Panel${key}`][key]['Height'] = '32';
           dfmObj[`Panel${key}`][key]['Caption'] = `${dfmObj[key]['Caption']}`;
+          dfmObj[`Panel${key}`][key]['Cursor'] = 'crHandPoint';
+          dfmObj[`Panel${key}`][key]['Enabled'] = `${dfmObj[key]['Enabled']}`;
           dfmObj[`Panel${key}`][key]['Flat'] = 'True';
           dfmObj[`Panel${key}`][key]['Font'] = {};
           dfmObj[`Panel${key}`][key]['Font']['Charset'] = 'ANSI_CHARSET';
-          dfmObj[`Panel${key}`][key]['Font']['Color'] = null; // ask user (main button is white font)
+          dfmObj[`Panel${key}`][key]['Font']['Color'] = isButtonsContainer ? '5789784' : '5789784';
           dfmObj[`Panel${key}`][key]['Font']['Height'] = null;
           dfmObj[`Panel${key}`][key]['Font']['Size'] = '10';
           dfmObj[`Panel${key}`][key]['Font']['Name'] = "'Segoe UI'";
           dfmObj[`Panel${key}`][key]['Font']['Style'] = '[fsBold]';
           dfmObj[`Panel${key}`][key]['ParentFont'] = 'False';
-          if (dfmObj[`Panel${key}`][key]['Glyph']) delete dfmObj[`Panel${key}`][key]['Glyph'];
+          dfmObj[`Panel${key}`][key]['Visible'] = `${dfmObj[key]['Visible']}`;
+          dfmObj[`Panel${key}`][key]['OnClick'] = `${dfmObj[key]['OnClick']}`;
 
           delete dfmObj[key]; // delete old button
         }
@@ -1260,9 +1021,10 @@ export class ConverterService {
         this.pasAddObject(pasObj, 'TPanel', `PnlTabs${key}`);
         dfmObj[`PnlTabs${key}`] = {};
         dfmObj[`PnlTabs${key}`]['_objectClass'] = 'TPanel';
+        dfmObj[`PnlTabs${key}`]['_order'] = '1';
         dfmObj[`PnlTabs${key}`]['AutoSize'] = 'False';
         dfmObj[`PnlTabs${key}`]['Align'] = 'alCustom';
-        dfmObj[`PnlTabs${key}`]['Top'] = '0';
+        dfmObj[`PnlTabs${key}`]['Top'] = `${dfmObj[key]['Top']}`;
         dfmObj[`PnlTabs${key}`]['Left'] = '0';
         dfmObj[`PnlTabs${key}`]['Height'] = '30';
         dfmObj[`PnlTabs${key}`]['Width'] = '894';
@@ -1277,8 +1039,58 @@ export class ConverterService {
         dfmObj[`PnlTabs${key}`]['Font']['Style'] = '[fsBold]';
         dfmObj[`PnlTabs${key}`]['ParentFont'] = 'False';
         dfmObj[`PnlTabs${key}`]['TabStop'] = 'True';
+        // add buttons container spacer
+        // back spacer (height)
+        dfmObj[`PnlTabs${key}Spacer1`] = dfmObj[`PnlTabs${key}`];
+        dfmObj[`PnlTabs${key}Spacer1`]['_order'] = '0';
+        dfmObj[`PnlTabs${key}Spacer1`]['Align'] = 'alTop';
+        dfmObj[`PnlTabs${key}Spacer1`]['Height'] = '27';
+        // left spacer (left)
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`] = dfmObj[`PnlTabs${key}`];
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['_order'] = '0';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Align'] = 'alLeft';
 
         tabSheets.forEach((tk, i) => {
+          // add scrollbox
+          if(Object.keys(dfmObj[key][tk]).findIndex(k => dfmObj[key][tk][k] && dfmObj[key][tk][k]['_objectClass'] === 'TScrollBox') < -1) {
+            const tsObjsKeys = Object.keys(dfmObj[key][tk])
+            .filter(k => dfmObj[key][tk][k] && dfmObj[key][tk][k]['_objectClass']); // tab sheet objects keys
+            const sbKey = `ScrollBox_${tk}`; // scroll box key
+
+            dfmObj[key][tk][sbKey] = {};
+            dfmObj[key][tk][sbKey]['_objectClass'] = 'TScrollBox';
+            dfmObj[key][tk][sbKey]['_order'] = '0';
+            dfmObj[key][tk][sbKey]['Left'] = '0';
+            dfmObj[key][tk][sbKey]['Top'] = '0';
+            dfmObj[key][tk][sbKey]['Align'] = 'alClient';
+            dfmObj[key][tk][sbKey]['AutoScroll'] = 'True';
+            dfmObj[key][tk][sbKey]['AutoSize'] = 'False';
+            dfmObj[key][tk][sbKey]['BevelEdges'] = '[]';
+            dfmObj[key][tk][sbKey]['BevelInner'] = 'bvNone';
+            dfmObj[key][tk][sbKey]['BevelKind'] = 'bkNone';
+            dfmObj[key][tk][sbKey]['BevelOuter'] = 'bvNone';
+            dfmObj[key][tk][sbKey]['BevelWidth'] = '1';
+            dfmObj[key][tk][sbKey]['BorderStyle'] = 'bsNone';
+            dfmObj[key][tk][sbKey]['Ctl3D'] = 'False';
+            dfmObj[key][tk][sbKey]['Color'] = 'clWhite';
+            dfmObj[key][tk][sbKey]['Font'] = {};
+            dfmObj[key][tk][sbKey]['Font']['Charset'] = 'ANSI_CHARSET';
+            dfmObj[key][tk][sbKey]['Font']['Color'] = 'clWhite';
+            dfmObj[key][tk][sbKey]['Font']['Height'] = null;
+            dfmObj[key][tk][sbKey]['Font']['Size'] = '9';
+            dfmObj[key][tk][sbKey]['Font']['Name'] = "'Segoe UI'";
+            dfmObj[key][tk][sbKey]['Font']['Style'] = '[]';
+            dfmObj[key][tk][sbKey]['ParentFont'] = 'False';
+            dfmObj[key][tk][sbKey]['TabStop'] = 'False';
+            dfmObj[key][tk][sbKey]['TabOrder'] = '0';
+
+            // remove objects from tab sheet and assign it to the scrollbox
+            tsObjsKeys.forEach(k => {
+              dfmObj[key][tk][sbKey][k] = dfmObj[key][tk][k];
+              delete dfmObj[key][tk][k];
+            });
+          }
+
           // add button container
           this.pasAddObject(pasObj, 'TPanel', `Pnl${tk}`);
           dfmObj[`PnlTabs${key}`][`Pnl${tk}`] = {};

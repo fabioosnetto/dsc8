@@ -1,0 +1,34 @@
+## Delphi Objects
+
+### The list of objects this tool will recognize
+- TPanel
+- TPageControl
+- TTabSheet
+- TScrollBox
+- TGroupBox
+- TDBGrid
+- TMSDBGrid
+- TStringGrid
+- TComboBox
+- TLabel
+- TDBText
+- TEdit
+- TMaskEdit
+- TDBEdit
+- TDBMemo
+- TMSDBEditNum
+- TMSDBDateEdit
+- TMSDBFind
+- TMSEdit
+- TMSEditFind
+- TMSEditSel
+- ~~TMSFindIncZ~~
+- TDBCheckBox
+- TCheckBox
+- TRadioButton
+- TButton
+- TBitBtn
+- TSpeedButton
+- TDBSpeedButton
+- TMSButton
+- ~~TSplitter~~

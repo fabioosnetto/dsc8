@@ -86,7 +86,8 @@ export class ConverterComponent implements OnInit, OnDestroy {
     this.orders = new Array();
     if(!this.selectedObject) return;
     const {parent, child} = this._getObjectByPath(this.selectedObject.path);
-    this.orders = this._getOrdersByObjectType(parent, child);
+    const parentBtnCase = this._getObjectByPath(this.selectedObject.path.slice(0,-1)).parent;
+    this.orders = this._getOrdersByObjectType(this.isButton(this.selectedObject.class) ? parentBtnCase : parent, child);
   }
   //--- On Order Change
   public onOrderChange(): void {
@@ -103,8 +104,7 @@ export class ConverterComponent implements OnInit, OnDestroy {
     // set top and left
     const setTopAndLeft = (parent: any, childObjType: 'label' | 'field' | 'button') => {
       const rowMultiplier = childObjType !== 'button' ? 50 : 28;
-      const rowMargin = childObjType === 'label' ? 10 : ( childObjType === 'field' ? 27 : 28);
-      
+      const rowMargin = childObjType === 'label' ? 10 : ( childObjType === 'field' ? 27 : 6);
       let accumlatedWidth = 0;
       let row = 1;
 
@@ -112,11 +112,10 @@ export class ConverterComponent implements OnInit, OnDestroy {
       .filter(k => parent[k]['_objectClass'] && parent[k]['_order'] && (
         (childObjType === 'label' && this.isLabel(parent[k]['_objectClass'])) ||
         (childObjType === 'field' && this.isField(parent[k]['_objectClass'])) ||
-        (childObjType === 'button' && this.isButtonPanel(parent[k]['_objectClass']))
+        (childObjType === 'button' && this.isButtonPanel(parent[k]))
       ))
       .sort((key1, key2) => parent[key1]['_order'] - parent[key2]['_order'])
       .forEach((k, i) => {
-
         if((accumlatedWidth + Number(parent[k]['Width']) + 30) >= 910) {
           row++;
           accumlatedWidth = 0;
@@ -143,47 +142,50 @@ export class ConverterComponent implements OnInit, OnDestroy {
           // all path keys was used, the target object is found
           if(pathKeyIndex === (this.selectedObject.path.length)) {
             
-            // buttons are not directly modified here
-            if(!this.isButton(this.selectedObject.class)) {
+            // set order/tab order
+            if(this.selectedObject.order > -1) {
+              obj['_order'] = `${this.selectedObject.order}`;
+              if(!this.isLabel(this.selectedObject.class) && !this.isButton(this.selectedObject.class)) obj['TabOrder'] = `${this.selectedObject.order-1}`;
+            } else {
+              obj['_order'] = defObj.order > -1 ? `${defObj.order}` : null;
+              if(!this.isLabel(this.selectedObject.class) && !this.isButton(this.selectedObject.class)) obj['TabOrder'] = defObj.order > -1 ? `${defObj.order}` : null; // fix issue -> obj tab order must be restaured and not turned null
+            }
 
-              // set order/tab order
-              if(this.selectedObject.order > -1) {
-                obj['_order'] = `${this.selectedObject.order}`;
-                if(!this.isLabel(this.selectedObject.class)) obj['TabOrder'] = `${this.selectedObject.order}`;
-              } else {
-                obj['_order'] = defObj.order > -1 ? `${defObj.order}` : null;
-                if(!this.isLabel(this.selectedObject.class)) obj['TabOrder'] = defObj.order > -1 ? `${defObj.order}` : null; // fix issue -> obj tab order must be restaured and not turned null
-              }
+            if(!this.isButton(this.selectedObject.class)) { 
               // set width
               if(typeof this.selectedObject.width !== 'number') obj['Width'] = `${this.selectedObject.width.value}`;
               // else obj['Width'] = `${this.selectedObject.width.value}`; // fix issue -> obj tab order must be restaured and not turned null
-            }
+            } else if(this.selectedObject.order === 1) obj['Font']['Color'] = 'clWhite';
 
             break; // stop execution when target object is achieved
           }
           // one path keys leftover, the parent object is found
           else if(pathKeyIndex === (this.selectedObject.path.length-1)) {
 
-            // buttons are not directly modified here
             if(!this.isButton(this.selectedObject.class)) {
               // set top and left
               setTopAndLeft(obj, 'label');
               setTopAndLeft(obj, 'field');
+            }
+            // the button container case
+            else {
+              if(this.selectedObject.order > 0) {
+                obj['_order'] = `${this.selectedObject.order}`;
+                obj['TabOrder'] = `${this.selectedObject.order-1}`;
+              }
+              // set the main button
+              if(this.selectedObject.order === 1) {
+                obj['Color'] = '6766380';
+                obj['Font']['Color'] = 'clWhite';
+              }
             }
 
           }
           // two path keys leftover, the parent of parent object is found
           else if(pathKeyIndex === (this.selectedObject.path.length-2)) {
             
-            // modify buttons here
+            // modify buttons here (current object === buttons container)
             if(this.isButton(this.selectedObject.class)) {
-              
-              // set the main button
-              if(this.selectedObject.order === 1) {
-                obj['Color'] = '6766380';
-                obj['Font']['Color'] = 'clWhite';
-              }
-              
               // set top and left
               setTopAndLeft(obj, 'button');
             }
@@ -205,11 +207,12 @@ export class ConverterComponent implements OnInit, OnDestroy {
   //--- Get Orders
   private _getOrdersByObjectType(parentObj: any, childObj: any): Array<number> {
     const orders = Object.keys(parentObj)
-    .filter(k => parentObj[k]['_objectClass'] && (
+    .filter(k => {
+      return parentObj[k]['_objectClass'] && (
       (this.isLabel(parentObj[k]['_objectClass']) && this.isLabel(childObj['_objectClass'])) ||
       (this.isField(parentObj[k]['_objectClass']) && this.isField(childObj['_objectClass'])) ||
-      (this.isButton(parentObj[k]['_objectClass']) && this.isButton(childObj['_objectClass']))
-    ));
+      (this.isButtonPanel(parentObj[k]) && this.isButton(childObj['_objectClass']))
+    )});
     return Array.from({length: orders.length}, (_, i) => i + 1);
   };
   //--- Get Sizes
@@ -230,11 +233,11 @@ export class ConverterComponent implements OnInit, OnDestroy {
     return classes.includes(className);
   };
   public isField(className: string){
-    const classes = ['TEdit', 'TMSEdit'];
+    const classes = ['TEdit', 'TMSEdit', 'TMSEditSel', 'TComboBox', 'TMaskEdit', 'TMSDateEdit', 'TDBText', 'TDBEdit', 'TDBMemo', 'TMSDBEditNum', 'TMSDBFind', 'TMSEditFind', 'TMSFindIncZ', 'TDBCheckBox'];
     return classes.includes(className);
   };
   public isButton(className: string){
-    const classes = ['TSpeedButton'];
+    const classes = ['TButton', 'TBitBtn', 'TDBSpeedButton', 'TSpeedButton', 'TMSButton'];
     return classes.includes(className);
   };
   public isButtonPanel(obj: any){
@@ -256,7 +259,7 @@ export class ConverterComponent implements OnInit, OnDestroy {
     }>
   }> {
     
-    const recursiveCall = (obj: any, parent?: string, path: Array<string> = []): Array<{
+    const recursiveCall = (obj: any, parent1?: string, parent2?: string, path: Array<string> = []): Array<{
       parent: string,
       children: Array<{
         name: string,
@@ -267,7 +270,56 @@ export class ConverterComponent implements OnInit, OnDestroy {
         order: number,
         width: { id: number, name: string, value: number } | number
     }>}> => {
-      let objs: Array<{
+      let allChildren: Array<{
+        name: string,
+        class: string,
+        path: Array<string>,
+        parent: string,
+        caption?: string;
+        order: number,
+        width: { id: number, name: string, value: number } | number
+      }> = [];
+
+      for (const key in obj) {
+        if (!obj[key] || !obj[key]['_objectClass']) continue;
+    
+        // Recursively collect children from nested objects
+        allChildren = allChildren.concat(
+          recursiveCall(obj[key], key, parent1, path.concat([key]))
+            .flatMap(parentObj => parentObj.children)
+        );
+    
+        // Only process objects of certain types
+        if ((!this.isLabel(obj[key]['_objectClass']) && !this.isField(obj[key]['_objectClass']) && !this.isButton(obj[key]['_objectClass'])) || parent1 === 'PanelTitle') continue;
+    
+        const objParent = !this.isButton(obj[key]['_objectClass']) ? parent1 || '' : parent2 || '';
+    
+        allChildren.push({
+          name: key,
+          class: obj[key]['_objectClass'],
+          path: path.concat(key) || [],
+          parent: objParent,
+          caption: obj[key]['Caption'] || '',
+          order: obj[key]['_order'] && !isNaN(obj[key]['_order']) ? Number(obj[key]['_order']) : -1,
+          width: this.sizes.filter(s => s.value === Number(obj[key]['Width']))[0] || -1
+        });
+      }
+    
+      // At the end of recursion, group by parent
+      return groupByParent(allChildren);
+    }
+    // Helper function to group children by their parent
+    const groupByParent = (children: Array<{
+      name: string,
+      class: string,
+      path: Array<string>,
+      parent: string,
+      caption?: string;
+      order: number,
+      width: { id: number, name: string, value: number } | number
+    }>) => {
+      // Group objects by parent
+      return children.reduce((grouped: Array<{
         parent: string,
         children: Array<{
           name: string,
@@ -277,46 +329,24 @@ export class ConverterComponent implements OnInit, OnDestroy {
           caption?: string;
           order: number,
           width: { id: number, name: string, value: number } | number
-      }>}> = [];
-
-      for (const key in obj) {
-        if (!obj[key] || !obj[key]['_objectClass']) continue;
-        objs = objs.concat(recursiveCall(obj[key], key, path.concat([key])));
-
-        if ((!this.isLabel(obj[key]['_objectClass']) && !this.isField(obj[key]['_objectClass']) && !this.isButton(obj[key]['_objectClass'])) || parent === 'PanelTitle') continue;
-
-        // push a new parent
-        const parentIndex = objs.findIndex(v => v.parent === parent);
-        if(parentIndex < 0 && parent) {
-          objs.push({
-            parent: parent || '',
-            children: [{
-              name: key,
-              class: obj[key]['_objectClass'],
-              path: path.concat(key) || [],
-              parent: parent || '',
-              caption: obj[key]['Caption'] || '',
-              order: obj[key]['_order'] && !isNaN(obj[key]['_order']) ? Number(obj[key]['_order']) : -1,
-              width: this.sizes.filter(s => s.value === Number(obj[key]['Width']))[0] || -1
-            }]
-          });
+        }>
+      }>, child) => {
+        // Find if the parent already exists
+        let parentObj = grouped.find(v => v.parent === child.parent);
+        
+        // If parent doesn't exist, create a new group for it
+        if (!parentObj) {
+          parentObj = { parent: child.parent, children: [] };
+          grouped.push(parentObj);
         }
-        // push a new child
-        else {
-          objs[parentIndex].children.push({
-            name: key,
-            class: obj[key]['_objectClass'],
-            path: path.concat(key) || [],
-            parent: parent || '',
-            caption: obj[key]['Caption'] || '',
-            order: obj[key]['_order'] && !isNaN(obj[key]['_order']) ? Number(obj[key]['_order']) : -1,
-            width: this.sizes.filter(s => s.value === Number(obj[key]['Width']))[0] || -1
-          });
-        }
-      }
+        
+        // Push the child to the parent's children array
+        parentObj.children.push(child);
 
-      return objs;
-    }
+        return grouped;
+      }, []);
+    };
+
 
     return recursiveCall(dfm_js);
   }
@@ -365,6 +395,7 @@ export class ConverterComponent implements OnInit, OnDestroy {
           else if(index1 > 0) this.selectedObject = this.objects[index1-1].children[this.objects[index1-1].children.length-1];
           else this.selectedObject = this.objects[this.objects.length-1].children[this.objects[this.objects.length-1].children.length-1];
 
+          this.onSelectedObjectChange();
           return;
         }
       }
@@ -379,6 +410,7 @@ export class ConverterComponent implements OnInit, OnDestroy {
           else if(index1 < (this.objects.length - 1)) this.selectedObject = this.objects[index1+1].children[0];
           else this.selectedObject = this.objects[0].children[0];
 
+          this.onSelectedObjectChange();
           return;
         }
       }

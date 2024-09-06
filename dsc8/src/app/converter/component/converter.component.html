@@ -35,7 +35,7 @@
          </li>
 
          <!-- object caption -->
-         <ng-container *ngIf="isLabel(selectedObject.class)">
+         <ng-container *ngIf="isLabel(selectedObject.class) || isButton(selectedObject.class)">
             <li class="convert-item">
                <label for="object-caption" class="convert-label h-100 w-50 ps-2 d-flex align-items-center">Caption</label>
                <input id="object-caption" type="text" class="convert-control h-100 w-50 ps-2" [(ngModel)]="selectedObject.caption" disabled>
