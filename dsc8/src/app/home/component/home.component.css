@@ -1,0 +1,5 @@
+ul#delphi-objects-list { height: calc((100vh / 4) * 1); }
+
+ul#tool-usage-steps {
+   list-style-type: decimal;
+}

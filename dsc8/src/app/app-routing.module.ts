@@ -26,7 +26,12 @@ const routes: Routes = [
         component: TabsComponent,
         children: [
 
-          { path: '', component: PageNotFoundComponent, pathMatch: 'full' },
+          { path: '', redirectTo: 'home', pathMatch: 'full' },
+
+          {
+            path: 'home',
+            loadChildren: () => import('./home/home.module').then(m => m.HomeModule)
+          },
 
           {
             path: ':file/:extension',
