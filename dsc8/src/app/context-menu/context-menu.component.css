@@ -1,0 +1,18 @@
+.context-menu-container {
+   background-color: #4c4a4ac2;
+   backdrop-filter: blur(3px) saturate(300%);
+   color: white;
+   position: fixed;
+   width: 200px;
+   box-shadow: 1px 1px 3px 4px #00000029;
+   border-radius: .5rem;
+   z-index: 9999;
+}
+.context-menu-container .context-menu-item button {
+   font-size: .9rem;
+   color: rgb(246, 246, 246);
+}
+.context-menu-container .context-menu-item:hover button {
+   background-color: rgb(41 104 201);
+   color: white;
+}

@@ -1,0 +1,13 @@
+div#original-file-container, div#modified-file-container {
+   background-color: rgb(34, 37, 41);
+   border-radius: .5rem;
+   padding: 1rem;
+}
+div#original-file-container textarea.form-control, div#modified-file-container textarea.form-control {
+   height: calc(50vh - 8rem);
+}
+textarea.form-control {
+   color: white;
+   background-color: gray;
+   border-radius: .5rem;
+}

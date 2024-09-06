@@ -1,0 +1,37 @@
+<div id="tabs-container" class="col-12 col-sm-12 h-100 pt-2">
+   <div class="card card-primary card-outline card-outline-tabs h-100">
+
+      <!-- Tabs Selector -->
+      <div class="card-header p-0 border-bottom-0">
+         <ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+
+            <ng-container *ngFor="let tab of tabs">
+               <li class="nav-item">
+
+                  <button class="nav-link" [ngClass]="{ 'active': tab === currentTab }" [id]="tab.path" data-toggle="pill" ariaCurrentWhenActive="page" role="tab" aria-controls="custom-tabs-four-home" aria-selected="true" (click)="redirectToTab(tab)">
+                     {{ tab.name }}
+                  </button>
+
+                  <button type="button" class="btn btn-tool close-tab-btn" (click)="removeTab(tab)">
+                     x
+                  </button>
+               </li>
+            </ng-container>
+
+         </ul>
+      </div>
+
+      <!-- Tab Viewer -->
+      <div class="card-body">
+         <div class="h-100 tab-content" id="custom-tabs-four-tabContent">
+
+            <div class="h-100 tab-pane fade show active" [id]="currentTab.path + '-tab'" role="tabpanel"
+               [attr.aria-labelledby]="currentTab.path">
+               <router-outlet></router-outlet>
+            </div>
+
+         </div>
+      </div>
+
+   </div>
+</div>

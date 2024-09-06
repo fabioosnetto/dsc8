@@ -1,0 +1,78 @@
+<div id="converter-container" class="bg-dark p-2">
+   <div class="header">
+      <h2 class="p-2">Converter Viewer</h2>
+   </div>
+
+   <!-- object selection -->
+   <div id="obj-selection-container" class="w-100 mb-3">
+      <select id="object-selection" class="form-select p-1" [compareWith]="selectedObjectCompareFn"  [(ngModel)]="selectedObject" (change)="onSelectedObjectChange()">
+         <option [value]="null" selected disabled>Select an object to style</option>
+
+         <ng-container *ngFor="let parent of objects">
+            <optgroup [label]="parent.parent">
+               <ng-container *ngFor="let child of parent.children">
+                  <option [ngValue]="child">{{ child.name }}</option>
+               </ng-container>
+            </optgroup>
+         </ng-container>
+      </select>
+   </div>
+
+   <!-- conversion options -->
+   <ng-container *ngIf="selectedObject">
+      <ul class="list-unstyled w-100">
+
+         <!-- parent object name -->
+         <li class="convert-item">
+            <label for="object-parent" class="convert-label h-100 w-50 ps-2 d-flex align-items-center">Parent</label>
+            <input id="object-parent" type="text" class="convert-control h-100 w-50 ps-2" [(ngModel)]="selectedObject.parent" disabled>
+         </li>
+
+         <!-- object name and class -->
+         <li class="convert-item">
+            <label for="object-name-class" class="convert-label h-100 w-50 ps-2 d-flex align-items-center">{{ selectedObject.name }}</label>
+            <input id="object-name-class" type="text" class="convert-control h-100 w-50 ps-2" [(ngModel)]="selectedObject.class" disabled>
+         </li>
+
+         <!-- object caption -->
+         <ng-container *ngIf="isLabel(selectedObject.class) || isButton(selectedObject.class)">
+            <li class="convert-item">
+               <label for="object-caption" class="convert-label h-100 w-50 ps-2 d-flex align-items-center">Caption</label>
+               <input id="object-caption" type="text" class="convert-control h-100 w-50 ps-2" [(ngModel)]="selectedObject.caption" disabled>
+            </li>
+         </ng-container>
+
+         <!-- object order -->
+         <li class="convert-item">
+            <label for="object-order" class="convert-label h-100 w-50 ps-2 d-flex align-items-center">Order</label>
+            <select id="object-order" class="convert-control h-100 w-50 ps-2" [(ngModel)]="selectedObject.order" (change)="onOrderChange()">
+               <option value="-1" selected>Default order</option>
+
+               <ng-container *ngFor="let order of orders">
+                  <option [ngValue]="order">{{ order }}</option>
+               </ng-container>
+            </select>
+         </li>
+
+         <!-- object width -->
+         <ng-container *ngIf="!isButton(selectedObject.class)">
+            <li class="convert-item">
+               <label for="object-width" class="convert-label h-100 w-50 ps-2 d-flex align-items-center">Width</label>
+               <select id="object-width" class="convert-control h-100 w-50 ps-2" [(ngModel)]="selectedObject.width" (change)="onWidthChage()">
+                  <option value="-1" selected>Default width</option>
+
+                  <ng-container *ngFor="let size of sizes">
+                     <option [ngValue]="size">{{ size.name }}</option>
+                  </ng-container>
+               </select>
+            </li>
+         </ng-container>
+      </ul>
+
+      <div class="w-100 d-flex gap-2">
+         <button type="button" class="btn btn-primary text-white w-50" (click)="prevObject()">&lt;</button>
+         <button type="button" class="btn btn-primary text-white w-50" (click)="nextObject()">&gt;</button>
+      </div>
+   </ng-container>
+
+</div>

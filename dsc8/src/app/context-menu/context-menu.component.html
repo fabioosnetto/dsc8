@@ -1,0 +1,13 @@
+<ng-container *ngIf="options.length">
+   <div class="context-menu-container" [style.left.px]="xPos" [style.top.px]="yPos">
+      <ul class="context-menu-options list-unstyled p-0 m-0">
+
+         <ng-container *ngFor="let option of options">
+            <li class="context-menu-item px-1 py-1">
+               <button type="button" class="btn text-white col-12 text-start p-1" (click)="onClickOption(option)">{{ option }}</button>
+            </li>
+         </ng-container>
+      
+      </ul>
+   </div>
+</ng-container>

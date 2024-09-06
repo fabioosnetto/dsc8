@@ -1,0 +1,56 @@
+#converter-container {
+   height: 100vh;
+   width: 280px;
+   position: fixed;
+   left: 280px;
+   top: 0;
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   border-left: 2px solid #535353c2;
+}
+
+/* header */
+#converter-container .header h2 {
+   font-size: 1.5rem;
+   color: gray;
+   font-weight: bold;
+}
+
+/* object selection */
+#converter-container #obj-selection-container .form-select {
+   background-color: transparent;
+   color: #e5e5e5;
+   border-color: #d3d3d366;
+}
+#converter-container #obj-selection-container .form-select:focus {
+   color: white;
+}
+
+/* style options */
+#converter-container ul li.convert-item {
+   backdrop-filter: contrast(110%);
+   height: 2.3rem;
+   display: flex;
+   flex-direction: row;
+   flex-wrap: nowrap;
+   justify-content: space-between;
+   align-items: center;
+   border: 1px solid #d3d3d366;
+}
+#converter-container ul li.convert-item .convert-label {
+   color: #8e8e8e;
+}
+#converter-container ul li.convert-item .convert-control {
+   background-color: #3b3b3b;
+   color: #e5e5e5;
+   border: none;
+}
+#converter-container ul li.convert-item .convert-control:not(:disabled):focus {
+   color: white;
+   outline: 1px solid #d3d3d3de;
+}
+#converter-container ul li.convert-item .convert-control:disabled {
+   background-color: transparent;
+   color: #8e8e8e;
+}
