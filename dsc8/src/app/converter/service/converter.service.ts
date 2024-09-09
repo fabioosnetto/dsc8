@@ -726,7 +726,7 @@ export class ConverterService {
             if(currentClass === 'TMSDateEdit') dfmObj[key]['Alignment'] = 'taCenter';
             if(currentClass === 'TMSDBEditNum' || currentClass === 'TMSDBFind' || currentClass === 'TMSEditFind' || currentClass === 'TMSEditSel' || currentClass === 'TDBMemo') dfmObj[key]['Alignment'] = 'taLeftJustify';
             
-            if(currentClass !== 'TComboBox') dfmObj[key]['AutoSize'] = 'False';
+            if(currentClass !== 'TComboBox' && currentClass !== 'TDBMemo') dfmObj[key]['AutoSize'] = 'False';
             dfmObj[key]['BevelEdges'] = '[beLeft,beTop,beRight,beBottom]';
             dfmObj[key]['BevelInner'] = 'bvSpace';
             dfmObj[key]['BevelKind'] = 'bkFlat';
