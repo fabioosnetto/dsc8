@@ -525,20 +525,20 @@ export class ConverterService {
       return -1;
     };
 
-    const getMethodDeclarationLastLineIndex = (lines: Array<string>): number => {
-      let methodMatches = 0;
+    const getMethodDeclarationLastLineIndex = (lines: Array<string>, formName: string): number => {
+      let methodMatches = false;
 
       for (const [index, line] of lines.entries()) {
         const trimmedLine = line.trim();
         const level = levels.filter((v: any) => v.i1 === line.search(/\S/))[0].i2; // Finds the first non-whitespace character index
 
         // mark form declaration start
-        if (trimmedLine.match(new RegExp(`${methodType} ${methodName}`))) {
-          methodMatches++;
+        if (trimmedLine.match(new RegExp(`${methodType} ${formName}.${methodName}`))) {
+          methodMatches = true;
         }
 
         // return the form objects declaration line index
-        if (methodMatches >= 2) {
+        if (methodMatches) {
           const currEnd = trimmedLine.match(new RegExp('end;'));
           const next1Blank = String(lines[index + 1]).trim() === '';
           const next2End = String(lines[index + 2]).trim().includes('end.')
@@ -597,7 +597,7 @@ export class ConverterService {
       const indent = String(lines[lines.length - 1]).match(new RegExp('\\s*'))?.[0] || '';
       newLines = new Array();
       newLines = newLines.concat(lines.slice(0, lines.length - 1));
-      newLines.push(`${indent}${formName}.${methodType} ${methodName}(${methodParams});`);
+      newLines.push(`${indent}${methodType} ${formName}.${methodName}(${methodParams});`);
       newLines.push(`${indent}begin`);
       newLines.push(`${indent}${' '.repeat(3)}${methodContent.trim()}`);
       newLines.push(`${indent}end;\n`);
@@ -607,7 +607,7 @@ export class ConverterService {
     // case method already exists
     else {
       // get the last implementation line of the method
-      const methodIndex = getMethodDeclarationLastLineIndex(lines);
+      const methodIndex = getMethodDeclarationLastLineIndex(lines, formName);
 
       // declare a new lines with the method implementation
       const indent = String(lines[lines.length - 1]).match(new RegExp('\\s*'))?.[0] || '';
