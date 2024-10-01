@@ -257,7 +257,7 @@ export class ConverterService {
       const sortedObj: any = {};
       for (const [key, value] of sortedEntries) {
         // If the value is an object and not null, recursively sort it
-        sortedObj[key] = (typeof value === 'object' && value !== null) ? sortJs(value) : value;
+        sortedObj[key] = (typeof value === 'object' && value !== null && value['_objectClass']) ? sortJs(value) : value;
       }
 
       return sortedObj;
@@ -928,7 +928,7 @@ export class ConverterService {
         if(['TButton', 'TBitBtn', 'TDBSpeedButton', 'TSpeedButton', 'TMSButton'].includes(String(dfmObj[key]['_objectClass'])) && dfmObj['_objectClass'] === 'TPanel') {
           
           // container panel is only for buttons
-          const isButtonsContainer = !Object.keys(dfmObj).some(k => dfmObj[k]['_objectClass'] && !['TButton', 'TBitBtn', 'TDBSpeedButton', 'TSpeedButton', 'TMSButton'].includes(dfmObj[k]['_objectClass']));
+          const isButtonsContainer = !Object.keys(dfmObj).some(k => dfmObj[k]['_objectClass'] && !['TButton', 'TBitBtn', 'TDBSpeedButton', 'TSpeedButton', 'TMSButton', 'TPanel'].includes(dfmObj[k]['_objectClass']));
           if(isButtonsContainer) {
             // buttons container panel styles
             if (parent === dfmForm) {
@@ -959,7 +959,7 @@ export class ConverterService {
           dfmObj[`Panel${key}`]['Width'] = `${(((String(dfmObj[key]['Caption']).length - 2) * 10) + 20).toFixed()}`;
           dfmObj[`Panel${key}`]['Height'] = '28';
           dfmObj[`Panel${key}`]['BevelOuter'] = 'bvNone';
-          dfmObj[`Panel${key}`]['Color'] = isButtonsContainer ? 'clWhite' : 'clGray';
+          dfmObj[`Panel${key}`]['Color'] = isButtonsContainer ? 'clWhite' : '15132390';
           dfmObj[`Panel${key}`]['Cursor'] = 'crHandPoint';
           dfmObj[`Panel${key}`]['Font'] = {};
           dfmObj[`Panel${key}`]['Font']['Charset'] = 'ANSI_CHARSET';
@@ -1021,7 +1021,7 @@ export class ConverterService {
         this.pasAddObject(pasObj, 'TPanel', `PnlTabs${key}`);
         dfmObj[`PnlTabs${key}`] = {};
         dfmObj[`PnlTabs${key}`]['_objectClass'] = 'TPanel';
-        dfmObj[`PnlTabs${key}`]['_order'] = '1';
+        dfmObj[`PnlTabs${key}`]['_order'] = Infinity;
         dfmObj[`PnlTabs${key}`]['AutoSize'] = 'False';
         dfmObj[`PnlTabs${key}`]['Align'] = 'alCustom';
         dfmObj[`PnlTabs${key}`]['Top'] = `${dfmObj[key]['Top']}`;
@@ -1041,22 +1041,59 @@ export class ConverterService {
         dfmObj[`PnlTabs${key}`]['TabStop'] = 'True';
         // add buttons container spacer
         // back spacer (height)
-        dfmObj[`PnlTabs${key}Spacer1`] = dfmObj[`PnlTabs${key}`];
+        this.pasAddObject(pasObj, 'TPanel', `PnlTabs${key}Spacer1`);
+        dfmObj[`PnlTabs${key}Spacer1`] = {};
+        dfmObj[`PnlTabs${key}Spacer1`]['_objectClass'] = 'TPanel';
         dfmObj[`PnlTabs${key}Spacer1`]['_order'] = '0';
+        dfmObj[`PnlTabs${key}Spacer1`]['AutoSize'] = 'False';
         dfmObj[`PnlTabs${key}Spacer1`]['Align'] = 'alTop';
+        dfmObj[`PnlTabs${key}Spacer1`]['Top'] = `${dfmObj[key]['Top']}`;
+        dfmObj[`PnlTabs${key}Spacer1`]['Left'] = '0';
         dfmObj[`PnlTabs${key}Spacer1`]['Height'] = '27';
+        dfmObj[`PnlTabs${key}Spacer1`]['Width'] = '894';
+        dfmObj[`PnlTabs${key}Spacer1`]['BevelOuter'] = 'bvNone';
+        dfmObj[`PnlTabs${key}Spacer1`]['Color'] = 'clWhite';
+        dfmObj[`PnlTabs${key}Spacer1`]['Font'] = {};
+        dfmObj[`PnlTabs${key}Spacer1`]['Font']['Charset'] = 'ANSI_CHARSET';
+        dfmObj[`PnlTabs${key}Spacer1`]['Font']['Color'] = 'clWhite';
+        dfmObj[`PnlTabs${key}Spacer1`]['Font']['Height'] = null;
+        dfmObj[`PnlTabs${key}Spacer1`]['Font']['Size'] = '10';
+        dfmObj[`PnlTabs${key}Spacer1`]['Font']['Name'] = "'Segoe UI'";
+        dfmObj[`PnlTabs${key}Spacer1`]['Font']['Style'] = '[fsBold]';
+        dfmObj[`PnlTabs${key}Spacer1`]['ParentFont'] = 'False';
+        dfmObj[`PnlTabs${key}Spacer1`]['TabStop'] = 'True';
+
         // left spacer (left)
-        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`] = dfmObj[`PnlTabs${key}`];
+        this.pasAddObject(pasObj, 'TPanel', `PnlTabs${key}Spacer2`);
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`] = {};
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['_objectClass'] = 'TPanel';
         dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['_order'] = '0';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['AutoSize'] = 'False';
         dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Align'] = 'alLeft';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Top'] = `${dfmObj[key]['Top']}`;
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Left'] = '0';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Height'] = '30';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Width'] = '10';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['BevelOuter'] = 'bvNone';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Color'] = 'clWhite';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Font'] = {};
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Font']['Charset'] = 'ANSI_CHARSET';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Font']['Color'] = 'clWhite';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Font']['Height'] = null;
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Font']['Size'] = '10';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Font']['Name'] = "'Segoe UI'";
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['Font']['Style'] = '[fsBold]';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['ParentFont'] = 'False';
+        dfmObj[`PnlTabs${key}`][`PnlTabs${key}Spacer2`]['TabStop'] = 'True';
 
         tabSheets.forEach((tk, i) => {
           // add scrollbox
-          if(Object.keys(dfmObj[key][tk]).findIndex(k => dfmObj[key][tk][k] && dfmObj[key][tk][k]['_objectClass'] === 'TScrollBox') < -1) {
+          if(Object.keys(dfmObj[key][tk]).findIndex(k => dfmObj[key][tk][k] && dfmObj[key][tk][k]['_objectClass'] === 'TScrollBox') < 0) {
             const tsObjsKeys = Object.keys(dfmObj[key][tk])
             .filter(k => dfmObj[key][tk][k] && dfmObj[key][tk][k]['_objectClass']); // tab sheet objects keys
             const sbKey = `ScrollBox_${tk}`; // scroll box key
 
+            this.pasAddObject(pasObj, 'TScrollBox', `${sbKey}`);
             dfmObj[key][tk][sbKey] = {};
             dfmObj[key][tk][sbKey]['_objectClass'] = 'TScrollBox';
             dfmObj[key][tk][sbKey]['_order'] = '0';
@@ -1156,6 +1193,7 @@ export class ConverterService {
           dfmObj[`PnlTabs${key}`][`Pnl${tk}`][`Btn${tk}`]['Font']['Name'] = "'Segoe UI'";
           dfmObj[`PnlTabs${key}`][`Pnl${tk}`][`Btn${tk}`]['Font']['Style'] = '[fsBold]';
           dfmObj[`PnlTabs${key}`][`Pnl${tk}`][`Btn${tk}`]['ParentFont'] = 'False';
+          dfmObj[`PnlTabs${key}`][`Pnl${tk}`][`Btn${tk}`]['OnClick'] = `Btn${tk}Click`;
 
           // add tab button method
           this.pasAddMethod(pasObj,
@@ -1176,7 +1214,7 @@ export class ConverterService {
           const getGrids = (obj: any): any => {
             let grids: any = [];
             for (const key in obj) {
-              if (!obj[key]['_objectClass']) continue;
+              if (!obj[key]?.['_objectClass']) continue;
               if (obj[key]['_objectClass'] !== 'TPageControl') grids = grids.concat(getGrids(obj[key]));
               if (obj[key]['_objectClass'].includes('Grid')) grids.push(key);
             }
@@ -1189,7 +1227,8 @@ export class ConverterService {
               `Btn${tk}Click`,
               'Sender: TObject',
               `TDBGridPad(${gk}).defaultRowHeight := 30;
-                    TDBGridPad(${gk}).clientHeight     := (30 * TDBGridPad(${gk}).rowcount) + 30;`
+              TDBGridPad(${gk}).clientHeight     := (30 * TDBGridPad(${gk}).rowcount) + 30;
+              `
             );
           });
         });
@@ -1200,10 +1239,10 @@ export class ConverterService {
           `FormShow`,
           'Sender: TObject',
           `
-              ${key}.ActivePageIndex := 0;
-              ${tabSheets.map((tk, i) => `${key}.pages[${i}].TabVisible := false;`).join('\n')}
-              Btn${tabSheets[0]}Click(Sender);
-              `
+          ${key}.ActivePageIndex := 0;
+          ${tabSheets.map((tk, i) => `${key}.pages[${i}].TabVisible := false;`).join('\n')}
+          Btn${tabSheets[0]}Click(Sender);
+          `
         );
       }
     }
