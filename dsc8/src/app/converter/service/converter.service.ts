@@ -672,6 +672,8 @@ export class ConverterService {
             dfmObj[key]['AutoSize'] = 'False';
             dfmObj[key]['BorderStyle'] = 'bsNone';
             dfmObj[key]['BorderWidth'] = '0';
+            dfmObj[key]['ClientHeight'] = null;
+            dfmObj[key]['ClientWidth'] = null;
             dfmObj[key]['Ctl3D'] = 'False';
             dfmObj[key]['Font'] = {};
             dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
