@@ -707,6 +707,7 @@ export class ConverterService {
             dfmObj[key]['Font']['Size'] = '9';
             dfmObj[key]['Font']['Name'] = "'Segoe UI'";
             dfmObj[key]['Font']['Style'] = '[fsBold]';
+            dfmObj[key]['Height'] = '15';
             dfmObj[key]['ParentFont'] = 'False';
           break;
 
