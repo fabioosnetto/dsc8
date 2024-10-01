@@ -701,7 +701,12 @@ export class ConverterService {
             if(currentClass === 'TLabel' || currentClass === 'TDBText') {
               dfmObj[key]['Alignment'] = 'taLeftJustify';
               dfmObj[key]['AutoSize'] = 'False';
+            } else {
+              dfmObj[key]['Alignment'] = 'taRightJustify';
+              dfmObj[key]['AutoSize'] = 'False';
+              dfmObj[key]['Width'] = '195';
             }
+
             dfmObj[key]['Font'] = {};
             dfmObj[key]['Font']['Charset'] = 'ANSI_CHARSET';
             dfmObj[key]['Font']['Color'] = 'clBlack';
