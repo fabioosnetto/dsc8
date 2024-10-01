@@ -703,7 +703,7 @@ export class ConverterService {
               dfmObj[key]['AutoSize'] = 'False';
             } else {
               dfmObj[key]['Alignment'] = 'taRightJustify';
-              dfmObj[key]['AutoSize'] = 'False';
+              dfmObj[key]['AutoSize'] = null;
               dfmObj[key]['Width'] = '195';
             }
 
