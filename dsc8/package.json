@@ -4,7 +4,8 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build --base-href /dsc8-deploy/",
+    "build": "ng build --base-href /dsc8/",
+    "deploy": "ng deploy --repo=https://github.com/fabioosnetto/dsc8.git --name='fabioosnetto' --base-href=/dsc8/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:dsc8": "node dist/dsc8/server/server.mjs"
