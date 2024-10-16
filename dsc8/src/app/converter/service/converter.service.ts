@@ -136,17 +136,28 @@ export class ConverterService {
       // Determine the level of indentation
       const level = levels.filter((v: any) => v.i1 === line.search(/\S/))[0].i2; // Finds the first non-whitespace character index
       const trimmedLine = String(line.trim());
+      if (!trimmedLine) continue;
 
       // adds a multiline style started in a previous line
       if (multilineStyle.active) {
 
         if (multilineStyle.level) {
           if (multilineStyle.type === 'object') {
-            stack[multilineStyle.level][multilineStyle.key][multilineStyle.key1] = String(stack[multilineStyle.level][multilineStyle.key][multilineStyle.key1])
+            if(multilineStyle.key1) {
+              stack[multilineStyle.level][multilineStyle.key][multilineStyle.key1] = String(stack[multilineStyle.level][multilineStyle.key][multilineStyle.key1])
               .concat('\n', ' '.repeat(Math.abs((level - 1) * 2)), trimmedLine);
+            } else {
+              stack[multilineStyle.level][multilineStyle.key] = String(stack[multilineStyle.level][multilineStyle.key])
+              .concat('\n', ' '.repeat(Math.abs((level - 1) * 2)), trimmedLine);
+            }
           } else if (multilineStyle.type === 'string') {
-            stack[multilineStyle.level][multilineStyle.key] = String(stack[multilineStyle.level][multilineStyle.key])
+            if(multilineStyle.key1) {
+              stack[multilineStyle.level][multilineStyle.key][multilineStyle.key1] = String(stack[multilineStyle.level][multilineStyle.key][multilineStyle.key1])
               .concat('\n', ' '.repeat(Math.abs((level - 1) * 2)), trimmedLine);
+            } else {
+              stack[multilineStyle.level][multilineStyle.key] = String(stack[multilineStyle.level][multilineStyle.key])
+              .concat('\n', ' '.repeat(Math.abs((level - 1) * 2)), trimmedLine);
+            }
           } else if (multilineStyle.type === 'items') {
             stack[multilineStyle.level][multilineStyle.key] = String(stack[multilineStyle.level][multilineStyle.key])
               .concat('\n', ' '.repeat(Math.abs((level - 1) * 2)), trimmedLine);
@@ -191,16 +202,23 @@ export class ConverterService {
 
         stack[level - 1][key] = String(trimmedLine).match(new RegExp(`(?<=${key} = ).*`))?.[0];
 
-        if (stack[level - 1][key] === '<') {
+        // check for multine style
+        if (stack[level - 1][key].startsWith('<')) {
           multilineStyle.active = true;
           multilineStyle.type = 'items';
+          multilineStyle.level = level - 1;
+          multilineStyle.key = key;
+          multilineStyle.key1 = '';
+        } else if (stack[level - 1][key].startsWith('{')) {
+          multilineStyle.active = true;
+          multilineStyle.type = 'object';
           multilineStyle.level = level - 1;
           multilineStyle.key = key;
           multilineStyle.key1 = '';
         }
       }
       // create a nested style for the current line
-      else if (new RegExp('^\\w+\\.\\w+\\s=\\s').test(trimmedLine)) {
+      else if (new RegExp('^\\w+\\.\\w+\\s=').test(trimmedLine)) {
         const newObject = {};
         const key = String(trimmedLine).match(new RegExp('(\\w+)'))?.[1];
         if (!key) continue;
@@ -209,7 +227,7 @@ export class ConverterService {
 
         const key1 = String(trimmedLine).match(new RegExp(`${key}\\.(\\w+)`))?.[1];
         if (!key1) continue;
-        stack[level - 1][key][key1] = String(trimmedLine).match(new RegExp(`(?<=${key}\\.${key1} = ).*`))?.[0];
+        stack[level - 1][key][key1] = String(trimmedLine).match(new RegExp(`(?<=${key}\\.${key1} = ).*`))?.[0] || '';
 
         // check for multine style
         if (String(trimmedLine).match(new RegExp(`(?<=${key}\\.${key1} = )\\{`)) ||
@@ -217,6 +235,12 @@ export class ConverterService {
         ) {
           multilineStyle.active = true;
           multilineStyle.type = 'object';
+          multilineStyle.level = level - 1;
+          multilineStyle.key = key;
+          multilineStyle.key1 = key1;
+        } else if (!stack[level - 1][key][key1]) {
+          multilineStyle.active = true;
+          multilineStyle.type = 'string';
           multilineStyle.level = level - 1;
           multilineStyle.key = key;
           multilineStyle.key1 = key1;

@@ -4,6 +4,9 @@
    left: 0;
    top: 0;
 }
+#sidebar .btn.header-btn {
+   border-color: rgb(0 132 255 / 93%);
+}
 #sidebar ul#main-options button:disabled {
    background-color: transparent;
    border: none;
